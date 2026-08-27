@@ -1,23 +1,319 @@
 aid: hyperdx
 name: HyperDX
-description: 'HyperDX is a company surfaced via the API Evangelist harvest backlog (source: self-hosted-agent-stack)
-  and added to the network as a stub for full-pipeline profiling.'
+description: >-
+  HyperDX is an open-source observability platform that unifies logs, metrics, traces, session
+  replay and errors on top of ClickHouse and OpenTelemetry, giving engineers one place to search
+  raw events, correlate a log line to its trace and that span to a session replay, build dashboards
+  and run threshold alerts. It ships as an MIT-licensed self-hostable stack (the app, a Node.js API,
+  an opinionated OpenTelemetry collector distribution and ClickHouse), as HyperDX Cloud at
+  hyperdx.io, and as the user interface of ClickStack after ClickHouse acquired the company in
+  March 2025. Its developer surface is a REST management API for dashboards, alerts, sources,
+  saved searches, connections and webhooks, plus a first-party MCP server and an agent-friendly
+  terminal CLI.
 url: https://raw.githubusercontent.com/api-evangelist/hyperdx/refs/heads/main/apis.yml
+image: https://avatars.githubusercontent.com/u/130113031?v=4
 x-type: company
 x-source: harvest:self-hosted-agent-stack
-x-tier: stub
-x-tier-reason: harvest
 specificationVersion: '0.20'
 created: '2026-08-27'
 modified: '2026-08-27'
 tags:
 - Company
-apis: []
+- Observability
+- Monitoring
+- Logging
+- Tracing
+- Metrics
+- OpenTelemetry
+- ClickHouse
+- Open Source
+- Alerting
+- Dashboards
+- Session Replay
+- Developer Tools
+- Agents
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
 - FN: APIs.json
   email: info@apis.io
+apis:
+- aid: hyperdx:hyperdx-cloud-api-v1
+  name: HyperDX Cloud API (v1)
+  description: >-
+    The documented v1 API on HyperDX Cloud, covering alerts, dashboards and chart series queries at api.hyperdx.io
+    under /api/v1, authenticated with a Bearer personal API key. Documented as prose on hyperdx.io/docs/api;
+    no OpenAPI is published for this version.
+  humanURL: https://www.hyperdx.io/docs/api/alerts
+  baseURL: https://api.hyperdx.io
+  tags:
+  - Alerts
+  - Dashboards
+  - Charts
+  properties:
+  - type: Documentation
+    url: https://www.hyperdx.io/docs/api/alerts
+  - type: APIReference
+    url: https://www.hyperdx.io/docs/api/charts
+  - type: RateLimits
+    url: rate-limits/hyperdx-rate-limits.yml
+- aid: hyperdx:hyperdx-mcp-server
+  name: HyperDX (ClickStack) MCP Server
+  description: >-
+    First-party Model Context Protocol server shipped inside the HyperDX API package, served at /api/mcp
+    on your instance over Streamable HTTP with Bearer authentication. Exposes 27 tools covering source
+    discovery, metric catalogs, time series, tables, raw ClickHouse SQL, log pattern mining, emerging-signal
+    detection, trace waterfalls, dashboards, saved searches, alerts and webhooks. Not available on HyperDX
+    Cloud v1.
+  humanURL: https://github.com/hyperdxio/hyperdx/blob/main/MCP.md
+  baseURL: https://{hyperdx-instance-host}/api/mcp
+  tags:
+  - MCP
+  - Agents
+  - Observability
+  properties:
+  - type: MCPServer
+    url: mcp/hyperdx-mcp.yml
+  - type: ToolCrosswalk
+    url: mcp/hyperdx-tool-crosswalk.yml
+  - type: Documentation
+    url: https://github.com/hyperdxio/hyperdx/blob/main/MCP.md
+- aid: hyperdx:hyperdx-alerts-api
+  name: HyperDX Alerts API
+  description: Endpoints for managing monitoring alerts
+  humanURL: https://github.com/hyperdxio/hyperdx/blob/main/packages/api/openapi.json
+  baseURL: https://{hyperdx-instance-host}/api/v2
+  tags:
+  - Alerts
+  properties:
+  - type: OpenAPI
+    url: openapi/hyperdx-alerts-api-openapi.yml
+  - type: Documentation
+    url: https://www.hyperdx.io/docs
+  - type: APIReference
+    url: https://clickhouse.com/docs/clickstack/api-reference
+  - type: ErrorCatalog
+    url: errors/hyperdx-problem-types.yml
+  - type: DataModel
+    url: data-model/hyperdx-data-model.yml
+- aid: hyperdx:hyperdx-charts-api
+  name: HyperDX Charts API
+  description: Endpoints for querying chart data
+  humanURL: https://github.com/hyperdxio/hyperdx/blob/main/packages/api/openapi.json
+  baseURL: https://{hyperdx-instance-host}/api/v2
+  tags:
+  - Charts
+  properties:
+  - type: OpenAPI
+    url: openapi/hyperdx-charts-api-openapi.yml
+  - type: Documentation
+    url: https://www.hyperdx.io/docs
+  - type: APIReference
+    url: https://clickhouse.com/docs/clickstack/api-reference
+  - type: ErrorCatalog
+    url: errors/hyperdx-problem-types.yml
+  - type: DataModel
+    url: data-model/hyperdx-data-model.yml
+- aid: hyperdx:hyperdx-connections-api
+  name: HyperDX Connections API
+  description: Endpoints for managing ClickHouse connections
+  humanURL: https://github.com/hyperdxio/hyperdx/blob/main/packages/api/openapi.json
+  baseURL: https://{hyperdx-instance-host}/api/v2
+  tags:
+  - Connections
+  properties:
+  - type: OpenAPI
+    url: openapi/hyperdx-connections-api-openapi.yml
+  - type: Documentation
+    url: https://www.hyperdx.io/docs
+  - type: APIReference
+    url: https://clickhouse.com/docs/clickstack/api-reference
+  - type: ErrorCatalog
+    url: errors/hyperdx-problem-types.yml
+  - type: DataModel
+    url: data-model/hyperdx-data-model.yml
+- aid: hyperdx:hyperdx-dashboards-api
+  name: HyperDX Dashboards API
+  description: Endpoints for managing dashboards and their visualizations
+  humanURL: https://github.com/hyperdxio/hyperdx/blob/main/packages/api/openapi.json
+  baseURL: https://{hyperdx-instance-host}/api/v2
+  tags:
+  - Dashboards
+  properties:
+  - type: OpenAPI
+    url: openapi/hyperdx-dashboards-api-openapi.yml
+  - type: Documentation
+    url: https://www.hyperdx.io/docs
+  - type: APIReference
+    url: https://clickhouse.com/docs/clickstack/api-reference
+  - type: ErrorCatalog
+    url: errors/hyperdx-problem-types.yml
+  - type: DataModel
+    url: data-model/hyperdx-data-model.yml
+- aid: hyperdx:hyperdx-saved-searches-api
+  name: HyperDX Saved Searches API
+  description: The Saved Searches API from HyperDX — 2 operation(s) for saved searches.
+  humanURL: https://github.com/hyperdxio/hyperdx/blob/main/packages/api/openapi.json
+  baseURL: https://{hyperdx-instance-host}/api/v2
+  tags:
+  - Saved Searches
+  properties:
+  - type: OpenAPI
+    url: openapi/hyperdx-saved-searches-api-openapi.yml
+  - type: Documentation
+    url: https://www.hyperdx.io/docs
+  - type: APIReference
+    url: https://clickhouse.com/docs/clickstack/api-reference
+  - type: ErrorCatalog
+    url: errors/hyperdx-problem-types.yml
+  - type: DataModel
+    url: data-model/hyperdx-data-model.yml
+- aid: hyperdx:hyperdx-search-api
+  name: HyperDX Search API
+  description: Endpoints for querying raw data from log and trace sources
+  humanURL: https://github.com/hyperdxio/hyperdx/blob/main/packages/api/openapi.json
+  baseURL: https://{hyperdx-instance-host}/api/v2
+  tags:
+  - Search
+  properties:
+  - type: OpenAPI
+    url: openapi/hyperdx-search-api-openapi.yml
+  - type: Documentation
+    url: https://www.hyperdx.io/docs
+  - type: APIReference
+    url: https://clickhouse.com/docs/clickstack/api-reference
+  - type: ErrorCatalog
+    url: errors/hyperdx-problem-types.yml
+  - type: DataModel
+    url: data-model/hyperdx-data-model.yml
+- aid: hyperdx:hyperdx-sources-api
+  name: HyperDX Sources API
+  description: Endpoints for managing data sources
+  humanURL: https://github.com/hyperdxio/hyperdx/blob/main/packages/api/openapi.json
+  baseURL: https://{hyperdx-instance-host}/api/v2
+  tags:
+  - Sources
+  properties:
+  - type: OpenAPI
+    url: openapi/hyperdx-sources-api-openapi.yml
+  - type: Documentation
+    url: https://www.hyperdx.io/docs
+  - type: APIReference
+    url: https://clickhouse.com/docs/clickstack/api-reference
+  - type: ErrorCatalog
+    url: errors/hyperdx-problem-types.yml
+  - type: DataModel
+    url: data-model/hyperdx-data-model.yml
+- aid: hyperdx:hyperdx-team-api
+  name: HyperDX Team API
+  description: The Team API from HyperDX — 6 operation(s) for team.
+  humanURL: https://github.com/hyperdxio/hyperdx/blob/main/packages/api/openapi.json
+  baseURL: https://{hyperdx-instance-host}/api/v2
+  tags:
+  - Team
+  properties:
+  - type: OpenAPI
+    url: openapi/hyperdx-team-api-openapi.yml
+  - type: Documentation
+    url: https://www.hyperdx.io/docs
+  - type: APIReference
+    url: https://clickhouse.com/docs/clickstack/api-reference
+  - type: ErrorCatalog
+    url: errors/hyperdx-problem-types.yml
+  - type: DataModel
+    url: data-model/hyperdx-data-model.yml
+- aid: hyperdx:hyperdx-webhooks-api
+  name: HyperDX Webhooks API
+  description: Endpoints for managing webhooks
+  humanURL: https://github.com/hyperdxio/hyperdx/blob/main/packages/api/openapi.json
+  baseURL: https://{hyperdx-instance-host}/api/v2
+  tags:
+  - Webhooks
+  properties:
+  - type: OpenAPI
+    url: openapi/hyperdx-webhooks-api-openapi.yml
+  - type: Documentation
+    url: https://www.hyperdx.io/docs
+  - type: APIReference
+    url: https://clickhouse.com/docs/clickstack/api-reference
+  - type: ErrorCatalog
+    url: errors/hyperdx-problem-types.yml
+  - type: DataModel
+    url: data-model/hyperdx-data-model.yml
 common:
+- type: DomainSecurity
+  url: security/hyperdx-domain-security.yml
+- type: Authentication
+  url: authentication/hyperdx-authentication.yml
 - type: Website
   url: https://www.hyperdx.io/
+- type: DeveloperPortal
+  url: https://www.hyperdx.io/docs
+- type: Documentation
+  url: https://www.hyperdx.io/docs
+- type: APIReference
+  url: https://www.hyperdx.io/docs/api/alerts
+- type: GettingStarted
+  url: https://www.hyperdx.io/docs/install
+- type: Blog
+  url: https://www.hyperdx.io/blog
+- type: Pricing
+  url: https://www.hyperdx.io/pricing
+- type: SignUp
+  url: https://www.hyperdx.io/register
+- type: TermsOfService
+  url: https://www.hyperdx.io/terms/service
+- type: PrivacyPolicy
+  url: https://www.hyperdx.io/terms/privacy
+- type: GitHubOrganization
+  url: https://github.com/hyperdxio
+- type: Support
+  url: https://www.hyperdx.io/discord
+- type: StatusPage
+  url: https://hyperdx.statuspage.io/
+- type: SourceCode
+  url: https://github.com/hyperdxio/hyperdx
+- type: Packages
+  url: packages/hyperdx-packages.yml
+- type: SDKs
+  url: packages/hyperdx-packages.yml
+- type: CLI
+  url: cli/hyperdx-cli.yml
+- type: Sandbox
+  url: sandbox/hyperdx-sandbox.yml
+- type: Plans
+  url: plans/hyperdx-plans-pricing.yml
+- type: RateLimits
+  url: rate-limits/hyperdx-rate-limits.yml
+- type: ChangeLog
+  url: changelog/hyperdx-changelog.yml
+- type: Lifecycle
+  url: lifecycle/hyperdx-lifecycle.yml
+- type: Conventions
+  url: conventions/hyperdx-conventions.yml
+- type: ErrorCatalog
+  url: errors/hyperdx-problem-types.yml
+- type: DataModel
+  url: data-model/hyperdx-data-model.yml
+- type: MCPServer
+  url: mcp/hyperdx-mcp.yml
+- type: ToolCrosswalk
+  url: mcp/hyperdx-tool-crosswalk.yml
+- type: AgentSkill
+  url: skills/_index.yml
+- type: Webhooks
+  url: asyncapi/hyperdx-webhooks.yml
+- type: Conformance
+  url: conformance/hyperdx-conformance.yml
+- type: LLMsTxt
+  url: llms/hyperdx-llms.txt
+- type: Overlay
+  url: overlays/hyperdx-external-api-overlay.yaml
+- type: OpenAPI
+  url: openapi/hyperdx-external-api-openapi.json
+
+x-enrichment:
+  date: '2026-08-27'
+  status: enriched
+  artifacts_added: 26
+  pass: local-v1
