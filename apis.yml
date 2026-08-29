@@ -11,6 +11,18 @@ description: >-
   saved searches, connections and webhooks, plus a first-party MCP server and an agent-friendly
   terminal CLI.
 url: https://raw.githubusercontent.com/api-evangelist/hyperdx/refs/heads/main/apis.yml
+deliveryModel:
+  model: unknown
+  open_source: unknown
+  commercial: true
+  callable_host: false
+  label: Delivery model not determined — needs a product licence on record
+  confidence: low
+  source:
+  - pricing
+  - repository-unlicensed
+  generated: '2026-08-28'
+  method: derived
 image: https://avatars.githubusercontent.com/u/130113031?v=4
 x-type: company
 x-source: harvest:self-hosted-agent-stack
