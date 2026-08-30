@@ -38,6 +38,21 @@ tags:
 - Metrics
 - OpenTelemetry
 - ClickHouse
+- Open-Source
+- Alerting
+- Dashboards
+- Session Replay
+- Developer Tools
+- Agents
+tags_raw:
+- Company
+- Observability
+- Monitoring
+- Logging
+- Tracing
+- Metrics
+- OpenTelemetry
+- ClickHouse
 - Open Source
 - Alerting
 - Dashboards
@@ -240,6 +255,8 @@ apis:
   humanURL: https://github.com/hyperdxio/hyperdx/blob/main/packages/api/openapi.json
   baseURL: https://{hyperdx-instance-host}/api/v2
   tags:
+  - Webhook
+  tags_raw:
   - Webhooks
   properties:
   - type: OpenAPI
