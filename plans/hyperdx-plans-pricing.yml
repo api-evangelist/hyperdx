@@ -1,0 +1,81 @@
+generated: '2026-08-27'
+method: searched
+source: https://www.hyperdx.io/pricing
+name: HyperDX Plans and Pricing
+description: >-
+  HyperDX Cloud pricing as published on the vendor's own pricing page. Billing is volume-based —
+  the page states pricing is "based on your data usage only, no per-seat or per-host billing".
+  The self-hosted open-source build is free and not a priced plan.
+currency: USD
+billing_period: month
+plans:
+- name: Free
+  price: 0
+  currency: USD
+  period: month
+  included:
+    data: 3 GB/mo
+    retention: 3 days
+    users: 1
+  overage: null
+  limits:
+  - Up to 3 GB of data per month
+  - 3-day retention
+  - Up to 1 user
+  notes: No credit card required. Includes a 14-day Starter trial.
+- name: Starter
+  price: 20
+  currency: USD
+  period: month
+  included:
+    data: 50 GB/mo
+    retention: 30 days
+    users: unlimited
+  overage:
+  - '$0.40 per additional 1 GB'
+  - '$0.40 per 100 metrics (1 DPM)'
+  limits:
+  - 50 GB of data per month included, then metered
+  - 30-day retention
+  - Unlimited users at a flat rate
+  notes: 14-day trial available.
+- name: Enterprise
+  price: null
+  price_display: Custom Pricing
+  currency: USD
+  period: custom
+  included:
+    data: custom contracts
+    retention: custom
+    users: unlimited
+  overage: null
+  limits:
+  - Custom contracts and volume discounts
+  features:
+  - SAML SSO
+  contact: https://www.hyperdx.io/pricing
+  notes: Quote only — no published price.
+- name: Open Source (self-hosted)
+  price: 0
+  currency: USD
+  period: n/a
+  included:
+    data: unbounded (your own ClickHouse)
+    retention: your own TTL policy
+    users: unlimited
+  limits:
+  - No multi-tenancy
+  - Alert notifications via webhooks only (no SSO, Slack/PagerDuty OAuth or email alerts)
+  license: MIT
+  source: https://github.com/hyperdxio/hyperdx
+  notes: >-
+    Not a billed plan. Listed because the OSS/Cloud split is what determines which API surface a
+    customer gets — the v2 External API and the MCP server are the self-hosted/v2 build, not v1 Cloud.
+plan_count: 4
+paid_plan_count: 2
+free_tier: true
+evidence:
+- url: https://www.hyperdx.io/pricing
+  status: 200
+- url: https://www.hyperdx.io/docs/oss-vs-cloud
+  status: 200

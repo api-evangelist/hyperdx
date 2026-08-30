@@ -1,0 +1,189 @@
+generated: '2026-08-27'
+method: derived
+source: openapi/hyperdx-external-api-openapi.json
+name: HyperDX Data Model
+description: >-
+  Entity-relationship graph derived from the HyperDX External API v2 OpenAPI — $ref links between
+  component schemas plus the id-reference fields the schemas carry. The shape of this model is
+  unusual and worth stating plainly: HyperDX stores almost no telemetry of its own. A Source is a
+  saved description of how to read someone else's ClickHouse table, and every query the API runs is
+  compiled against that description. The entities below are configuration, not data.
+entities:
+- name: Connection
+  description: A ClickHouse server HyperDX queries. The root of the graph — nothing works without one.
+  id_field: id
+  fields: [id, name, host, username, hyperdxSettingPrefix, isPrometheusEndpoint, createdAt, updatedAt]
+  operations: [listConnections, createConnection, getConnection, updateConnection, deleteConnection]
+  relationships:
+  - type: has_many
+    target: Source
+    via: Source.connection
+- name: Source
+  description: >-
+    A typed view over a ClickHouse table. Discriminated union of LogSource, TraceSource,
+    MetricSource, SessionSource and PromqlSource — each variant declares the SQL expressions that
+    map that table onto the OpenTelemetry model (timestamp, service name, trace id, span id, body,
+    attributes).
+  id_field: id
+  kinds: [log, trace, metric, session, promql]
+  operations: [listSources, createSource, getSource, updateSource, deleteSource]
+  relationships:
+  - type: belongs_to
+    target: Connection
+    via: connection
+  - type: has_one
+    target: Source
+    via: LogSource.traceSourceId
+    note: A log source points at the trace source its logs correlate into.
+  - type: has_one
+    target: Source
+    via: LogSource.metricSourceId
+  - type: has_one
+    target: Source
+    via: TraceSource.logSourceId
+  - type: has_one
+    target: Source
+    via: TraceSource.sessionSourceId
+  - type: has_one
+    target: Source
+    via: TraceSource.metricSourceId
+  - type: has_one
+    target: Source
+    via: MetricSource.logSourceId
+  - type: has_one
+    target: Source
+    via: SessionSource.traceSourceId
+  note: >-
+    Sources cross-reference each other by id in both directions. This mutual wiring is what makes
+    "jump from this log line to its trace, and from that span to the session replay" work — the
+    correlation graph is declared in configuration, not inferred at query time.
+- name: Dashboard
+  description: A named collection of tiles, with dashboard-level filters and saved query state.
+  id_field: id
+  fields: [id, name, tiles, tags, filters, savedQuery, savedQueryLanguage, savedFilterValues, containers]
+  operations: [listDashboards, createDashboard, getDashboard, updateDashboard, deleteDashboard, validateDashboard]
+  relationships:
+  - type: has_many
+    target: Tile
+    via: tiles
+  - type: has_many
+    target: DashboardContainer
+    via: containers
+  - type: has_many
+    target: Filter
+    via: filters
+  - type: has_many
+    target: Alert
+    via: Alert.dashboardId
+- name: Tile
+  description: >-
+    One visualization on a dashboard — position (x, y, w, h) plus a TileConfig. The config is the
+    deep end of this model: a discriminated union over chart kind (line, bar, table, number, pie,
+    categorical bar, heatmap, search, event patterns, markdown) crossed with authoring mode
+    (builder vs raw SQL), which is where most of the spec's 130+ schemas live.
+  id_field: id
+  fields: [name, x, y, w, h, config, containerId, tabId]
+  relationships:
+  - type: belongs_to
+    target: Dashboard
+  - type: belongs_to
+    target: DashboardContainer
+    via: containerId
+  - type: belongs_to
+    target: Source
+    via: config.source
+  - type: has_many
+    target: Alert
+    via: Alert.tileId
+- name: DashboardContainer
+  description: A tabbed grouping of tiles within a dashboard.
+  relationships:
+  - type: belongs_to
+    target: Dashboard
+  - type: has_many
+    target: DashboardContainerTab
+- name: SavedSearch
+  description: A reusable query against one source — select, where, order by, filters and tags.
+  id_field: id
+  fields: [id, name, sourceId, select, where, whereLanguage, orderBy, tags, filters, teamId, createdAt, updatedAt]
+  operations: [listSavedSearches, createSavedSearch, getSavedSearch, updateSavedSearch, deleteSavedSearch]
+  relationships:
+  - type: belongs_to
+    target: Source
+    via: sourceId
+  - type: belongs_to
+    target: Team
+    via: teamId
+  - type: has_many
+    target: Alert
+    via: Alert.savedSearchId
+- name: Alert
+  description: >-
+    A threshold evaluated on a schedule against either a dashboard tile or a saved search, firing
+    into one or more channels.
+  fields: [dashboardId, tileId, savedSearchId, groupBy, threshold, thresholdMax, interval, scheduleOffsetMinutes, scheduleStartAt, source, thresholdType, channel, channels, name, message, note, numConsecutiveWindows]
+  operations: [listAlerts, createAlert, getAlert, updateAlert, deleteAlert]
+  relationships:
+  - type: belongs_to
+    target: Dashboard
+    via: dashboardId
+    note: Chart alerts. Mutually exclusive with the savedSearchId form.
+  - type: belongs_to
+    target: Tile
+    via: tileId
+  - type: belongs_to
+    target: SavedSearch
+    via: savedSearchId
+    note: Search alerts.
+  - type: has_many
+    target: Webhook
+    via: channels
+  polymorphic: true
+  polymorphic_note: >-
+    Alert.source discriminates between the two attachment shapes. dashboardId+tileId and
+    savedSearchId+groupBy are the two valid field sets; sending both is a validation error.
+- name: Webhook
+  description: >-
+    An outbound notification destination for alerts. Discriminated union of SlackWebhook,
+    IncidentIOWebhook and GenericWebhook.
+  kinds: [slack, incidentio, generic]
+  operations: [listWebhooks, createWebhook, updateWebhook, deleteWebhook]
+  relationships:
+  - type: has_many
+    target: Alert
+    via: Alert.channels
+    note: >-
+      Referential integrity is enforced at the API — deleting a webhook still referenced by an
+      alert returns 409.
+- name: Team
+  description: The tenancy boundary. Every other entity is team-scoped.
+  operations: [getTeam, listTeamMembers, inviteTeamMember, listTeamInvitations, deleteTeamInvitation, removeTeamMember]
+  relationships:
+  - type: has_many
+    target: TeamMember
+  - type: has_many
+    target: TeamInvitation
+  - type: has_many
+    target: SavedSearch
+    via: SavedSearch.teamId
+relationships_summary:
+  entities: 10
+  has_one: 8
+  has_many: 12
+  belongs_to: 9
+  polymorphic_unions: 4
+id_conventions:
+  prefixes: false
+  note: >-
+    Ids are opaque strings with no type prefix (no `dash_`/`alrt_` style discriminator). An agent
+    holding an id cannot tell from the id alone which collection it belongs to.
+schema_count: 143
+query_surface:
+  description: >-
+    Two operations read telemetry rather than configuration, and neither returns a modelled entity —
+    POST /api/v2/charts/series returns SeriesResponse (ts_bucket plus per-series values), and
+    POST /api/v2/search returns SearchResponse (SearchRow arrays). The row shape is determined by
+    the Source's SELECT expressions, so it is not enumerable from the spec.
+notes:
+- Derived from schema $refs and id-suffixed fields only. No relationship here was inferred from
+  prose, and none was invented.

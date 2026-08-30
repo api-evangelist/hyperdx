@@ -1,0 +1,492 @@
+openapi: 3.2.0
+info:
+  title: HyperDX External Webhooks API
+  description: API for managing HyperDX alerts and dashboards
+  version: 2.0.0
+servers:
+- url: /
+  description: Your HyperDX instance (http://<host>:<port>)
+security:
+- BearerAuth: []
+tags:
+- name: Webhooks
+  description: Endpoints for managing webhooks
+paths:
+  /api/v2/webhooks:
+    get:
+      summary: List Webhooks
+      description: Retrieves webhooks for the authenticated team (paginated). Results are capped at `limit` (default and maximum 1000). When more records exist than are returned, `meta.total` exceeds `data.length`; clients with large collections must page with `limit`/`offset` to retrieve them all.
+      operationId: listWebhooks
+      tags:
+      - Webhooks
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 1000
+        description: Maximum number of webhooks to return.
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+        description: Number of webhooks to skip before returning results.
+      responses:
+        '200':
+          description: Successfully retrieved webhooks
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhooksListResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                message: Unauthorized access. API key is missing or invalid.
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Create Webhook
+      description: Creates a new webhook for the authenticated team.
+      operationId: createWebhook
+      tags:
+      - Webhooks
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookInput'
+      responses:
+        '200':
+          description: Successfully created webhook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookResponseEnvelope'
+        '400':
+          description: Bad request or duplicate webhook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v2/webhooks/{id}:
+    put:
+      summary: Update Webhook
+      description: 'Replaces an existing webhook. Readable optional fields
+
+        (`description`, `body`) are a full replace: omitting them clears
+
+        them. The write-only fields `headers` and `queryParams` are never
+
+        returned on read, so omitting them preserves the stored values;
+
+        send an explicit empty object (`{}`) to clear them. Exception: if the
+
+        destination (`url` or `service`) changes, omitted `headers`/
+
+        `queryParams` are cleared rather than preserved so stored secrets are
+
+        never forwarded to a new destination.
+
+        '
+      operationId: updateWebhook
+      tags:
+      - Webhooks
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Webhook ID
+        example: 507f1f77bcf86cd799439011
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/WebhookInput'
+      responses:
+        '200':
+          description: Successfully updated webhook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/WebhookResponseEnvelope'
+        '400':
+          description: Bad request or duplicate webhook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Webhook not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Webhook was modified concurrently; retry with current state
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete Webhook
+      description: Deletes a webhook. Blocked with a 409 while any alert still references it — reassign or remove those alerts first — so deletion never leaves an alert pointing at a missing webhook (which would silently drop notifications). Mirrors the internal webhook delete guard.
+      operationId: deleteWebhook
+      tags:
+      - Webhooks
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Webhook ID
+        example: 507f1f77bcf86cd799439011
+      responses:
+        '200':
+          description: Successfully deleted webhook
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+              example: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Webhook not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Webhook is still referenced by one or more alerts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    IncidentIOWebhook:
+      type: object
+      required:
+      - id
+      - name
+      - service
+      - updatedAt
+      - createdAt
+      properties:
+        id:
+          type: string
+          description: Webhook ID
+          example: 507f1f77bcf86cd799439012
+        name:
+          type: string
+          description: Webhook name
+          example: Incident Response
+        service:
+          type: string
+          enum:
+          - incidentio
+          description: Webhook service type
+          example: incidentio
+        url:
+          type: string
+          description: incident.io alert event HTTP source URL
+          example: https://api.incident.io/v2/alert_events/http/abc123
+        description:
+          type: string
+          description: Webhook description, shown in the UI
+          example: Routes alerts to incident.io for on-call escalation
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+          example: '2025-06-15T10:30:00.000Z'
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+          example: '2025-01-01T00:00:00.000Z'
+    GenericWebhook:
+      type: object
+      required:
+      - id
+      - name
+      - service
+      - updatedAt
+      - createdAt
+      properties:
+        id:
+          type: string
+          description: Webhook ID
+          example: 507f1f77bcf86cd799439013
+        name:
+          type: string
+          description: Webhook name
+          example: PagerDuty Integration
+        service:
+          type: string
+          enum:
+          - generic
+          description: Webhook service type
+          example: generic
+        url:
+          type: string
+          description: Webhook destination URL
+          example: https://example.com/webhooks/alerts
+        description:
+          type: string
+          description: Webhook description, shown in the UI
+          example: Forwards alert payloads to an external monitoring service
+        body:
+          type: string
+          description: Optional request body template
+          example: '{"alert": "{{title}}", "severity": "{{level}}"}'
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+          example: '2025-06-15T10:30:00.000Z'
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+          example: '2025-01-01T00:00:00.000Z'
+    WebhookInput:
+      type: object
+      required:
+      - name
+      - service
+      - url
+      description: 'Webhook create/update body. `body`, `headers`, and `queryParams`
+
+        only take effect for services that issue a templated HTTP request
+
+        (`generic`, `incidentio`). The `slack` service posts a fixed payload
+
+        to its incoming-webhook URL and ignores them, so supplying any of
+
+        these fields on a `slack` webhook is rejected. `headers` and
+
+        `queryParams` are write-only — they are accepted here but never
+
+        returned by any read endpoint, so secrets such as auth tokens do
+
+        not leak. On
+
+        update (PUT), omitted readable fields (`description`, `body`) are
+
+        cleared, while omitted `headers`/`queryParams` are preserved —
+
+        send an explicit `{}` to clear them. Exception: if the destination
+
+        (`url` or `service`) changes, omitted `headers`/`queryParams` are
+
+        cleared rather than preserved, so stored secrets are never forwarded
+
+        to a new destination; re-supply them for the new destination.
+
+        '
+      properties:
+        name:
+          type: string
+          maxLength: 1024
+          description: Webhook name. Must be unique per service within the team.
+          example: Production Alerts
+        service:
+          type: string
+          enum:
+          - slack
+          - incidentio
+          - generic
+          description: Webhook service type.
+          example: slack
+        url:
+          type: string
+          format: uri
+          maxLength: 2048
+          description: Webhook destination URL.
+          example: https://hooks.slack.com/services/REDACTED
+        description:
+          type: string
+          maxLength: 2048
+          description: Webhook description, shown in the UI.
+          example: 'Sends critical alerts to the #incidents channel'
+        body:
+          type: string
+          maxLength: 16384
+          description: Optional request body template. Only for generic/incidentio; rejected for slack.
+          example: '{"alert": "{{title}}", "severity": "{{level}}"}'
+        headers:
+          type: object
+          maxProperties: 100
+          description: Write-only. Custom HTTP headers sent with the webhook request. Never returned on read. Only for generic/incidentio; rejected for slack. Each value is capped at 4096 characters.
+          additionalProperties:
+            type: string
+            maxLength: 4096
+          example:
+            Authorization: Bearer secret-token
+        queryParams:
+          type: object
+          maxProperties: 100
+          description: Write-only. Query parameters appended to the webhook URL. Never returned on read. Only for generic/incidentio; rejected for slack. Each value is capped at 4096 characters.
+          additionalProperties:
+            type: string
+            maxLength: 4096
+    PaginationMeta:
+      type: object
+      required:
+      - total
+      - limit
+      - offset
+      properties:
+        total:
+          type: integer
+          description: Total number of items matching the query, ignoring pagination.
+          example: 142
+        limit:
+          type: integer
+          description: Maximum number of items returned in this page.
+          example: 50
+        offset:
+          type: integer
+          description: Number of items skipped before this page.
+          example: 100
+    WebhookResponseEnvelope:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Webhook'
+          description: The webhook object.
+    SlackWebhook:
+      type: object
+      required:
+      - id
+      - name
+      - service
+      - updatedAt
+      - createdAt
+      properties:
+        id:
+          type: string
+          description: Webhook ID
+          example: 507f1f77bcf86cd799439011
+        name:
+          type: string
+          description: Webhook name
+          example: Production Alerts
+        service:
+          type: string
+          enum:
+          - slack
+          description: Webhook service type
+          example: slack
+        url:
+          type: string
+          description: Slack incoming webhook URL
+          example: https://hooks.slack.com/services/REDACTED
+        description:
+          type: string
+          description: Webhook description, shown in the UI
+          example: 'Sends critical alerts to the #incidents channel'
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+          example: '2025-06-15T10:30:00.000Z'
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+          example: '2025-01-01T00:00:00.000Z'
+    Webhook:
+      oneOf:
+      - $ref: '#/components/schemas/SlackWebhook'
+      - $ref: '#/components/schemas/IncidentIOWebhook'
+      - $ref: '#/components/schemas/GenericWebhook'
+      discriminator:
+        propertyName: service
+        mapping:
+          slack: '#/components/schemas/SlackWebhook'
+          incidentio: '#/components/schemas/IncidentIOWebhook'
+          generic: '#/components/schemas/GenericWebhook'
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Human-readable error message.
+          example: 'NOT_FOUND: Alert not found'
+    EmptyResponse:
+      type: object
+      properties: {}
+    WebhooksListResponse:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          type: array
+          description: List of webhook objects.
+          items:
+            $ref: '#/components/schemas/Webhook'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+          description: Pagination metadata for this result page.
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key

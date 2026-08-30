@@ -1,0 +1,200 @@
+generated: '2026-08-27'
+method: derived
+source: mcp/hyperdx-mcp.yml + openapi/hyperdx-external-api-openapi.json
+name: HyperDX MCP <-> REST Tool Crosswalk
+description: >-
+  Binds each of the 27 ClickStack MCP tools to the HyperDX External API v2 operations that back it,
+  so an agent can see which tool is a thin wrapper over a documented REST operation (and therefore
+  inherits that operation's parameters and requestBody as its real inputSchema) and which tool has
+  no public REST equivalent at all.
+surfaces:
+  openapi:
+    path: openapi/hyperdx-external-api-openapi.json
+    title: HyperDX External API
+    version: 2.0.0
+    operations: 39
+    gated: false
+    note: Spec is public in the hyperdxio/hyperdx repo; calling it needs a Bearer personal API key.
+  mcp:
+    url: '{your-hyperdx-url}/api/mcp'
+    transport: streamable-http
+    gated: true
+    note: >-
+      Live tools/list requires an authenticated session against a running instance, so tool
+      inputSchemas were not read. Bindings below are by name and documented semantics.
+  graphql:
+    endpoint: null
+    note: HyperDX publishes no GraphQL surface.
+crosswalk:
+- tool: clickstack_list_sources
+  category: sources
+  rest: [listSources, listConnections]
+  binding: composite
+  confidence: high
+  note: One tool folds the source catalog and the ClickHouse connection catalog into a single listing.
+- tool: clickstack_describe_source
+  category: sources
+  rest: [getSource]
+  binding: extends
+  confidence: medium
+  note: >-
+    Returns the REST source object plus column schema, attribute keys and sampled low-cardinality
+    values that the REST operation does not compute.
+- tool: clickstack_save_source
+  category: sources
+  rest: [createSource, updateSource]
+  binding: upsert
+  confidence: high
+  note: Omit id -> createSource; provide id -> updateSource.
+- tool: clickstack_delete_source
+  category: sources
+  rest: [deleteSource]
+  binding: direct
+  confidence: high
+- tool: clickstack_timeseries
+  category: query
+  rest: [queryChartSeries]
+  binding: direct
+  confidence: high
+  note: POST /api/v2/charts/series with a time-bucketed granularity.
+- tool: clickstack_table
+  category: query
+  rest: [queryChartSeries]
+  binding: direct
+  confidence: medium
+  note: Same operation, full-range aggregation (granularity omitted) rendered as table/number/pie.
+- tool: clickstack_search
+  category: query
+  rest: [searchEvents]
+  binding: direct
+  confidence: high
+  note: POST /api/v2/search over a log or trace source.
+- tool: clickstack_get_dashboard
+  category: dashboards
+  rest: [listDashboards, getDashboard]
+  binding: composite
+  confidence: high
+  note: No id -> list; id -> detail.
+- tool: clickstack_save_dashboard
+  category: dashboards
+  rest: [createDashboard, updateDashboard, validateDashboard]
+  binding: upsert
+  confidence: high
+- tool: clickstack_delete_dashboard
+  category: dashboards
+  rest: [deleteDashboard]
+  binding: direct
+  confidence: high
+- tool: clickstack_query_tile
+  category: dashboards
+  rest: [getDashboard, queryChartSeries]
+  binding: composite
+  confidence: low
+  note: >-
+    Reads a tile config off the dashboard then runs its query. There is no single REST operation
+    named for it; the composition is inferred from the tool description, not from the spec.
+- tool: clickstack_query_tiles
+  category: dashboards
+  rest: [getDashboard, queryChartSeries]
+  binding: composite
+  confidence: low
+  note: Batch form of clickstack_query_tile. Same inference caveat.
+- tool: clickstack_get_saved_search
+  category: saved-searches
+  rest: [listSavedSearches, getSavedSearch]
+  binding: composite
+  confidence: high
+- tool: clickstack_save_saved_search
+  category: saved-searches
+  rest: [createSavedSearch, updateSavedSearch]
+  binding: upsert
+  confidence: high
+- tool: clickstack_get_alert
+  category: alerts
+  rest: [listAlerts, getAlert]
+  binding: composite
+  confidence: high
+  note: >-
+    The tool additionally exposes evaluation history and a state filter; the REST list operation
+    returns the alert objects only.
+- tool: clickstack_save_alert
+  category: alerts
+  rest: [createAlert, updateAlert]
+  binding: upsert
+  confidence: high
+- tool: clickstack_get_webhook
+  category: webhooks
+  rest: [listWebhooks]
+  binding: direct
+  confidence: high
+- tool: clickstack_save_webhook
+  category: webhooks
+  rest: [createWebhook, updateWebhook]
+  binding: upsert
+  confidence: high
+- tool: clickstack_delete_webhook
+  category: webhooks
+  rest: [deleteWebhook]
+  binding: direct
+  confidence: high
+  note: Both surfaces refuse the delete while an alert still references the webhook (REST returns 409).
+mcp_only:
+- tool: clickstack_list_metrics
+  reason: No REST operation enumerates metric names on a metric source.
+- tool: clickstack_describe_metric
+  reason: No REST operation returns per-metric kind/unit/attribute-key drill-down.
+- tool: clickstack_event_patterns
+  reason: Drain log-pattern clustering is not exposed as a REST operation.
+- tool: clickstack_event_deltas
+  reason: Two-group property-distribution comparison is not exposed as a REST operation.
+- tool: clickstack_emerging_signals
+  reason: Two-window Drain novelty diff is not exposed as a REST operation.
+- tool: clickstack_sql
+  reason: >-
+    Raw ClickHouse SQL passthrough. The External API v2 has no raw-SQL operation; the CLI reaches it
+    through the HyperDX proxy, not through /api/v2.
+- tool: clickstack_trace_waterfall
+  reason: Span-tree assembly with correlated logs is server-side only; no REST operation returns it.
+- tool: clickstack_trace_top_time_consuming_operations
+  reason: Cumulative child-operation aggregation across matching parent traces has no REST equivalent.
+rest_only:
+- operationId: deleteAlert
+  reason: MCP exposes get/save for alerts but no delete tool.
+- operationId: deleteSavedSearch
+  reason: MCP exposes get/save for saved searches but no delete tool.
+- operationId: createConnection
+  reason: Connection writes are REST-only; MCP only reads connections via clickstack_list_sources.
+- operationId: getConnection
+  reason: Connection detail is REST-only.
+- operationId: updateConnection
+  reason: Connection writes are REST-only.
+- operationId: deleteConnection
+  reason: Connection writes are REST-only.
+- operationId: getTeam
+  reason: No team-management MCP tools exist.
+- operationId: listTeamMembers
+  reason: No team-management MCP tools exist.
+- operationId: inviteTeamMember
+  reason: No team-management MCP tools exist.
+- operationId: listTeamInvitations
+  reason: No team-management MCP tools exist.
+- operationId: deleteTeamInvitation
+  reason: No team-management MCP tools exist.
+- operationId: removeTeamMember
+  reason: No team-management MCP tools exist.
+coverage:
+  mcp_tools: 27
+  tools_bound_to_rest: 19
+  mcp_only_tools: 8
+  rest_operations: 39
+  rest_operations_bound: 27
+  rest_only_operations: 12
+  high_confidence_bindings: 15
+  medium_confidence_bindings: 2
+  low_confidence_bindings: 2
+notes:
+- The MCP surface is not a mechanical projection of the REST surface. Eight tools — metric catalog,
+  pattern mining, deltas, emerging signals, raw SQL and the two trace-analysis tools — are the
+  analysis layer, and they exist only for agents.
+- Twelve REST operations, all of team and connection administration plus two deletes, have no tool.
+  An agent cannot invite a teammate or rotate a ClickHouse connection through MCP.

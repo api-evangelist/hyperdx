@@ -1,0 +1,56 @@
+generated: '2026-08-27'
+method: probed
+source: https://api.hyperdx.io/api/v1/alerts
+name: HyperDX API Rate Limits
+description: >-
+  HyperDX does not publish a rate-limit page, but the HyperDX Cloud v1 API returns IETF
+  RateLimit-* headers on every response, including unauthenticated ones. The values below were
+  read off a live response on 2026-08-27, not from documentation.
+rate_limits:
+- scope: per-client
+  api: HyperDX Cloud API (v1)
+  host: api.hyperdx.io
+  window: 60s
+  limit: 100
+  burst: null
+  headers:
+  - name: ratelimit-limit
+    example: '100'
+    description: Requests permitted in the current window.
+  - name: ratelimit-remaining
+    example: '99'
+    description: Requests left in the current window.
+  - name: ratelimit-reset
+    example: '60'
+    description: Seconds until the window resets.
+  retry_after_header: false
+  exhaustion_status: 429
+  exhaustion_status_evidence: >-
+    Not observed. 429 is the standard status for the IETF RateLimit-* draft the headers follow;
+    HyperDX documents no exhaustion behaviour and the limit was not deliberately exceeded.
+  evidence:
+    url: https://api.hyperdx.io/api/v1/alerts
+    method: GET
+    status: 401
+    observed_headers: 'ratelimit-limit: 100 / ratelimit-remaining: 99 / ratelimit-reset: 60'
+    note: >-
+      Probed without credentials. The 401 body is "Unauthorized" but the rate-limit headers are
+      emitted before auth, so the limit is per-client and applies to unauthenticated traffic too.
+    fetched: '2026-08-27'
+- scope: per-instance
+  api: HyperDX External API (v2)
+  host: '{your-hyperdx-url}'
+  window: null
+  limit: null
+  headers: []
+  note: >-
+    The v2 External API is served by the HyperDX instance you run (self-hosted or ClickStack in
+    ClickHouse Cloud), not by api.hyperdx.io — GET https://api.hyperdx.io/api/v2/alerts returned
+    404 on 2026-08-27. No rate limit is declared in the OpenAPI (no 429 response is defined on any
+    of the 39 operations) and none is documented, so limits are whatever the operator's own
+    deployment enforces. Recorded as unknown rather than zero.
+limit_count: 1
+documented: false
+notes:
+- No 429 response object appears anywhere in the External API v2 OpenAPI.
+- The headers use the lowercase IETF draft form (ratelimit-*), not the legacy X-RateLimit-* form.

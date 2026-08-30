@@ -1,0 +1,97 @@
+generated: '2026-08-27'
+method: derived
+source: openapi/hyperdx-external-api-openapi.json + https://github.com/hyperdxio/hyperdx/blob/main/CHANGELOG.md
+name: HyperDX Webhooks
+description: >-
+  HyperDX's event surface is outbound alert delivery. When an alert crosses its threshold or
+  resolves, HyperDX POSTs to one or more registered webhook destinations. Destinations are
+  first-class API resources with full CRUD, and an alert references them by id — so an agent can
+  create the destination, attach it to an alert, and manage the whole notification path over the
+  API without touching the UI.
+asyncapi_spec: null
+asyncapi_note: >-
+  HyperDX publishes no AsyncAPI document. Probed for one in the repo and on the docs host; none
+  exists. This is a webhook catalog derived from the REST contract, not a fabricated AsyncAPI.
+delivery:
+  direction: outbound
+  transport: HTTPS POST
+  trigger: alert threshold crossed or alert resolved
+  fan_out:
+    min_channels: 1
+    max_channels: 10
+    duplicates: rejected
+    since: >-
+      Up to ten notification webhooks per alert landed in release 2.36.0 (2026-08-21); before that
+      an alert had a single channel.
+destination_types:
+- service: slack
+  schema: SlackWebhook
+  url_field: Slack incoming webhook URL
+  templating: false
+  note: Posts a fixed payload. Supplying body, headers or queryParams on a slack webhook is rejected.
+- service: incidentio
+  schema: IncidentIOWebhook
+  url_field: incident.io alert event HTTP source URL
+  templating: true
+- service: generic
+  schema: GenericWebhook
+  url_field: any HTTPS destination
+  templating: true
+  note: >-
+    Optional request-body template, custom headers and query params. This is the escape hatch —
+    the spec's own example names PagerDuty as a generic destination.
+destination_fields:
+  readable: [id, name, service, url, description, createdAt, updatedAt]
+  write_only: [headers, queryParams]
+  write_only_note: >-
+    headers and queryParams are accepted on write but never returned by any read endpoint, so
+    stored auth tokens do not leak back out. An agent cannot read back a header it did not set.
+  update_semantics: >-
+    On PUT, omitted readable fields (description, body) are CLEARED, while omitted
+    headers/queryParams are PRESERVED — send an explicit {} to clear them. Exception: if the
+    destination (url or service) changes, omitted headers/queryParams are cleared rather than
+    preserved, so secrets never follow a webhook to a new address. This asymmetry is a real
+    footgun for a naive PUT-the-whole-object client.
+operations:
+- operationId: listWebhooks
+  method: GET
+  path: /api/v2/webhooks
+- operationId: createWebhook
+  method: POST
+  path: /api/v2/webhooks
+- operationId: updateWebhook
+  method: PUT
+  path: /api/v2/webhooks/{id}
+- operationId: deleteWebhook
+  method: DELETE
+  path: /api/v2/webhooks/{id}
+attachment:
+  schema: AlertChannelWebhook
+  shape: '{ "type": "webhook", "webhookId": "<id>" }'
+  field: Alert.channels
+  note: AlertChannelType currently enumerates exactly one value — "webhook".
+security:
+  ssrf_protection: true
+  since: 2.29.0
+  since_date: '2026-06-30'
+  detail: >-
+    Webhook destination URLs are validated against SSRF protections; deliveries to private or
+    reserved addresses are blocked by default. Internal hosts must be listed in
+    WEBHOOK_HOSTNAME_ALLOWLIST (comma-separated; a hostname entry covers its subdomains, IP entries
+    match exactly). The allowlist does not bypass protocol validation, Slack hostname validation,
+    or the block on the configured ClickHouse and MongoDB hosts.
+  signing: not documented
+  retries: not documented
+  payload_schema: not published
+  gap_note: >-
+    The payload HyperDX sends to a generic webhook is not documented in the OpenAPI or the docs —
+    only the body TEMPLATE field is. A receiver has to infer the shape, or template it explicitly.
+cloud_channels:
+  note: >-
+    HyperDX Cloud additionally supports email, Slack OAuth, PagerDuty and Opsgenie as alert
+    channels (the v1 docs list email, slack, pagerduty, opsgenie, slack_webhook). The open-source
+    build is webhooks only, per the vendor's OSS-vs-Cloud comparison.
+inbound_events: false
+inbound_events_note: >-
+  There is no inbound webhook receiver and no event subscription API. Telemetry arrives over OTLP
+  (ports 4317/4318), which is an ingestion protocol, not a webhook surface.

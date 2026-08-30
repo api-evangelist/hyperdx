@@ -1,0 +1,106 @@
+generated: '2026-08-27'
+method: searched
+source: https://github.com/hyperdxio/hyperdx/blob/main/MCP.md
+name: HyperDX (ClickStack) MCP Server
+description: >-
+  HyperDX ships a first-party Model Context Protocol server inside the product itself. It is served
+  by the HyperDX API package at the /api/mcp path on the instance you run, over the Streamable HTTP
+  transport with Bearer-token authentication using a Personal API access key.
+status: published
+deployment:
+  mode: remote
+  endpoint: '{your-hyperdx-url}/api/mcp'
+  install: ''
+  package: ''
+  auth: api-key
+  verified: searched
+  note: >-
+    The endpoint is a real Streamable-HTTP MCP URL, but it is INSTANCE-SCOPED, not a vendor-hosted
+    SaaS URL — HyperDX serves it from whatever host runs the HyperDX app (self-hosted, or ClickHouse
+    Cloud's ClickStack). MCP.md's own worked example is http://localhost:8080/api/mcp. There is no
+    npx/stdio package: the server is part of packages/api, shipped in the Docker image, so this is
+    recorded as `remote` rather than `local-stdio`. HyperDX v1 Cloud (hyperdx.io) does NOT support
+    the MCP server — the vendor states this in MCP.md, and a POST to https://api.hyperdx.io/mcp
+    returned 404 on 2026-08-27, which corroborates it.
+transport: streamable-http
+authentication:
+  scheme: Bearer
+  credential: Personal API access key
+  where: Team Settings > API keys > Personal API access key
+clients_documented:
+- Claude Code
+- Codex CLI
+- OpenCode
+- Cursor
+- MCP Inspector
+tools:
+- name: clickstack_list_sources
+  description: List all data sources and connections as a lightweight catalog (IDs, names, kinds).
+- name: clickstack_describe_source
+  description: Full column schema, attribute keys, sampled low-cardinality values and a round-trippable config block for a single source.
+- name: clickstack_save_source
+  description: Create (omit id) or update (provide id) a data source (log, trace, session, metric or promql).
+- name: clickstack_delete_source
+  description: Permanently delete a data source by ID.
+- name: clickstack_list_metrics
+  description: Paginated catalog of metric names on a metric source with kind / namePattern / time-window filters.
+- name: clickstack_describe_metric
+  description: Per-metric drill-down — kinds, unit, description, attribute keys per map column and sampled values.
+- name: clickstack_timeseries
+  description: Plot metrics over time as a line or stacked bar chart across log, trace and metric sources.
+- name: clickstack_table
+  description: Compute aggregated metrics as a table, single number or pie chart.
+- name: clickstack_search
+  description: Browse individual log, event or trace rows.
+- name: clickstack_event_patterns
+  description: Discover the most common log messages and event patterns using Drain clustering.
+- name: clickstack_event_deltas
+  description: Compare two row groups and rank properties by how their value distributions differ.
+- name: clickstack_emerging_signals
+  description: Detect NEW or GONE log/event patterns between a baseline and a current window.
+- name: clickstack_sql
+  description: Execute raw ClickHouse SQL for advanced queries (JOINs, CTEs, sub-queries).
+- name: clickstack_get_dashboard
+  description: List all dashboards or get full detail for a specific dashboard.
+- name: clickstack_save_dashboard
+  description: Create or update a dashboard with tiles (charts, tables, numbers, search, markdown).
+- name: clickstack_delete_dashboard
+  description: Permanently delete a dashboard and its attached alerts.
+- name: clickstack_query_tile
+  description: Execute the query for a specific dashboard tile to validate results.
+- name: clickstack_query_tiles
+  description: Batch-validate many dashboard tiles in one call.
+- name: clickstack_get_saved_search
+  description: List all saved searches or get full detail for a specific saved search.
+- name: clickstack_save_saved_search
+  description: Create or update a saved search.
+- name: clickstack_get_alert
+  description: List alerts (summary) or get full detail with evaluation history; filter by state.
+- name: clickstack_save_alert
+  description: Create a new alert or update an existing one.
+- name: clickstack_trace_waterfall
+  description: Fetch all spans in a single trace as a parent/child waterfall tree with optional correlated logs.
+- name: clickstack_trace_top_time_consuming_operations
+  description: Aggregate breakdown of child operations by cumulative time across matching parent traces.
+- name: clickstack_get_webhook
+  description: List available webhook destinations for use as alert notification channels.
+- name: clickstack_save_webhook
+  description: Create (omit id) or update (provide id) a webhook notification destination.
+- name: clickstack_delete_webhook
+  description: Permanently delete a webhook by ID (blocked while alerts still reference it).
+prompts:
+- name: dashboards
+  source: packages/api/src/mcp/prompts/dashboards
+  note: The server also ships MCP prompts for dashboard authoring.
+tool_count: 27
+evidence:
+- url: https://github.com/hyperdxio/hyperdx/blob/main/MCP.md
+  status: 200
+  note: Tool names and descriptions transcribed verbatim from the vendor's own table.
+- url: https://api.hyperdx.io/mcp
+  status: 404
+  note: POST tools/list against HyperDX v1 Cloud — 404, consistent with MCP.md's "v1 does not support MCP".
+notes:
+- Tool inputSchemas were NOT captured. The live schema requires an authenticated MCP session against
+  a running instance; the source of record is packages/api/src/mcp/tools/*/schemas.ts in the repo.
+- Server source of record — https://github.com/hyperdxio/hyperdx/tree/main/packages/api/src/mcp

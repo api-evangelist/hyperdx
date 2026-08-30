@@ -1,0 +1,76 @@
+generated: '2026-08-27'
+method: searched
+source: openapi/hyperdx-external-api-openapi.json + https://www.hyperdx.io/docs/api/alerts + https://github.com/hyperdxio/hyperdx/blob/main/MCP.md
+docs: https://www.hyperdx.io/docs/api/alerts
+name: HyperDX Authentication
+description: >-
+  One credential, one scheme, across every HyperDX surface. The REST API (v1 and v2), the MCP
+  server and the CLI all authenticate with a personal API access key presented as an HTTP Bearer
+  token. There is no OAuth, no OpenID Connect, no mTLS, no scopes and no service-account concept —
+  the key carries whatever the person it belongs to can do in their team.
+summary:
+  types:
+  - http
+  oauth2: false
+  openid_connect: false
+  mutual_tls: false
+  api_key_header: false
+  scopes: false
+schemes:
+- name: BearerAuth
+  type: http
+  scheme: bearer
+  bearerFormat: API Key
+  header: Authorization
+  format: 'Authorization: Bearer <personal API access key>'
+  sources:
+  - openapi/hyperdx-external-api-openapi.json
+  - https://www.hyperdx.io/docs/api/alerts
+  - https://github.com/hyperdxio/hyperdx/blob/main/MCP.md
+  applies_to:
+  - HyperDX External API v2 (all 39 operations — declared as a global `security` requirement)
+  - HyperDX Cloud API v1 (documented on hyperdx.io/docs/api)
+  - HyperDX MCP server at /api/mcp (Streamable HTTP, Authorization header)
+  - '@hyperdx/cli (hdx auth login stores the credential)'
+credential:
+  name: Personal API access key
+  where: HyperDX UI > Team Settings > API keys > Personal API access key
+  prefix: null
+  prefix_note: No documented key prefix, so a leaked key is not identifiable by shape.
+  rotation:
+    supported: true
+    since: 2.36.0
+    since_date: '2026-08-21'
+    note: >-
+      Before release 2.36.0 the personal API access key was fixed for the life of the account and
+      could not be rotated. Any deployment older than 2026-08-21 has no rotation path.
+  expiry: none documented
+  scoping: >-
+    Team-scoped and personal. A 403 means the key authenticated but the team or resource is out of
+    reach; there is no narrower permission model to express in the request.
+ingestion_credential:
+  name: Ingestion API key
+  distinct_from_management_key: true
+  note: >-
+    Telemetry ingestion into the OpenTelemetry collector uses a separate auto-generated ingestion
+    API key, sent with OTLP data — not the personal access key used for the management API. The
+    ClickStack collector distribution pulls its OTLP endpoint configuration over OpAMP.
+enterprise:
+  saml_sso: true
+  saml_note: >-
+    SAML SSO is an Enterprise-tier feature for logging into the product. It governs human sign-in,
+    not API authentication — API calls are still Bearer key.
+  oss_note: >-
+    The open-source build has no SSO and no Slack/PagerDuty OAuth; the OSS/Cloud comparison page
+    lists alert delivery there as webhooks only.
+gaps:
+- No OAuth 2.0 or OIDC, so no delegated authorization and no third-party app model.
+- No scopes or permissions, so a key cannot be narrowed to read-only. An agent handed a key to run
+  clickstack_search can also call clickstack_delete_dashboard.
+- No key prefix and no documented expiry.
+evidence:
+- url: https://www.hyperdx.io/docs/api/alerts
+  status: 200
+- url: https://api.hyperdx.io/api/v1/alerts
+  status: 401
+  note: Unauthenticated GET returns 401 "Unauthorized" — confirms the scheme is enforced.

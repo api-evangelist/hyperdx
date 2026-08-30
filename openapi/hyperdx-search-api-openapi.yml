@@ -1,0 +1,226 @@
+openapi: 3.2.0
+info:
+  title: HyperDX External Search API
+  description: API for managing HyperDX alerts and dashboards
+  version: 2.0.0
+servers:
+- url: /
+  description: Your HyperDX instance (http://<host>:<port>)
+security:
+- BearerAuth: []
+tags:
+- name: Search
+  description: Endpoints for querying raw data from log and trace sources
+paths:
+  /api/v2/search:
+    post:
+      summary: Search Raw Logs and Traces
+      description: "Fetch individual log or trace rows from a HyperDX source.\n\nThis endpoint mirrors the \"search\" panel mode in the HyperDX UI.\nHyperDX applies the same query optimizations used in the UI:\n  - Named attribute columns (e.g. \"pipedream.pipeline_name\") are\n    rewritten to their indexed materialized equivalents when the\n    source schema exposes them, avoiding slow Map lookups.\n  - Rows are ordered by timestamp descending (most recent first).\n  - The source's built-in PREWHERE / partition pruning is applied.\n\nAuthentication: Bearer token (personal API key from Team Settings).\n"
+      operationId: searchEvents
+      tags:
+      - Search
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SearchRequest'
+            examples:
+              recentErrors:
+                summary: Recent errors for a service
+                value:
+                  sourceId: 69b46cb0d964ce2d0b9506a8
+                  startTime: '2026-05-10T00:00:00Z'
+                  endTime: '2026-05-10T01:00:00Z'
+                  where: SeverityText:ERROR
+                  select: Timestamp,SeverityText,Body,ServiceName
+                  maxResults: 50
+              pipedreamTaskLogs:
+                summary: Pipedream task logs with materialized column filter
+                value:
+                  sourceId: 69b46cb0d964ce2d0b9506a8
+                  startTime: '2026-05-10T00:00:00Z'
+                  endTime: '2026-05-10T01:00:00Z'
+                  where: pipedream.pipeline_name:my-pipeline
+                  select: Timestamp,SeverityText,Body,pipedream.pipeline_name,pipedream.stage_name,pipedream.task_index
+                  maxResults: 200
+              traceSearch:
+                summary: Slow spans for a service
+                value:
+                  sourceId: 69b46cb0d964ce2d0b9508b2
+                  startTime: '2026-05-10T00:00:00Z'
+                  endTime: '2026-05-10T01:00:00Z'
+                  where: ServiceName:my-service AND Duration:>1000000000
+                  select: Timestamp,TraceId,SpanId,SpanName,ServiceName,Duration,StatusCode
+                  maxResults: 100
+              paginated:
+                summary: Paginated fetch
+                value:
+                  sourceId: 69b46cb0d964ce2d0b9506a8
+                  startTime: '2026-05-10T00:00:00Z'
+                  endTime: '2026-05-10T01:00:00Z'
+                  maxResults: 100
+                  offset: 100
+      responses:
+        '200':
+          description: Matching rows returned successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SearchResponse'
+              example:
+                data:
+                - Timestamp: '2026-05-10T00:01:23.456789000Z'
+                  SeverityText: ERROR
+                  Body: 'connection refused: redis:6379'
+                  ServiceName: api-service
+                rows: 1
+        '400':
+          description: Invalid request parameters or query error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '401':
+          description: Missing or invalid API key
+        '404':
+          description: Source or connection not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '500':
+          description: Server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+components:
+  schemas:
+    SearchResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          description: Array of result rows. Each row is an object with keys corresponding to the requested columns.
+          items:
+            $ref: '#/components/schemas/SearchRow'
+        rows:
+          type: integer
+          description: Number of rows in this response (not total matching rows).
+    SearchRow:
+      type: object
+      description: 'A single result row. Keys correspond to the requested columns (or the source default columns when columns was omitted). Values are strings or numbers as returned by ClickHouse.
+
+        '
+      additionalProperties: true
+    SearchRequest:
+      type: object
+      required:
+      - sourceId
+      properties:
+        sourceId:
+          type: string
+          description: 'Source ID to query. Call GET /api/v2/sources to list available sources.
+
+            The source determines the underlying ClickHouse table (e.g. otel.otel_logs,
+
+            otel.otel_traces) and its column schema.
+
+            '
+          example: 69b46cb0d964ce2d0b9506a8
+        startTime:
+          type: string
+          format: date-time
+          description: 'Start of the query window (ISO 8601). Defaults to 15 minutes before endTime. Must be before endTime.
+
+            '
+          example: '2026-05-10T00:00:00Z'
+        endTime:
+          type: string
+          format: date-time
+          description: End of the query window (ISO 8601). Defaults to now.
+          example: '2026-05-10T01:00:00Z'
+        where:
+          type: string
+          maxLength: 8192
+          default: ''
+          description: "Row filter expression. The language is controlled by whereLanguage.\n\nLucene examples (default):\n  SeverityText:ERROR\n  pipedream.pipeline_name:my-pipeline AND SeverityText:ERROR\n  Body:timeout\n\nSQL examples (whereLanguage: \"sql\"):\n  SeverityText = 'ERROR'\n  `pipedream.pipeline_name` = 'my-pipeline'\n"
+          example: SeverityText:ERROR
+        whereLanguage:
+          type: string
+          enum:
+          - lucene
+          - sql
+          example: lucene
+          default: lucene
+          description: Language used for the where filter. Default is lucene.
+        select:
+          type: string
+          maxLength: 4096
+          default: ''
+          description: 'Comma-separated list of ClickHouse column expressions to include in
+
+            each result row. When omitted the source''s default select expression
+
+            is used.
+
+
+            Each entry is a ClickHouse SQL expression executed under the team''s
+
+            database user. Semicolons and subqueries (SELECT keyword) are
+
+            rejected; use column references, map lookups, or function calls only.
+
+
+            HyperDX rewrites known attribute column names to their materialized
+
+            equivalents automatically; you can still pass the logical name.
+
+            '
+          example: Timestamp,SeverityText,Body,pipedream.pipeline_name
+        orderBy:
+          type: string
+          maxLength: 1024
+          description: 'ClickHouse ORDER BY expression. When omitted the source''s default
+
+            ordering (typically timestamp DESC) is used.
+
+            '
+          example: Timestamp DESC
+        maxResults:
+          type: integer
+          minimum: 1
+          maximum: 2000
+          default: 100
+          description: Maximum number of rows to return. Default is 100, max is 2000.
+        offset:
+          type: integer
+          minimum: 0
+          maximum: 10000
+          default: 0
+          description: 'Number of rows to skip (best-effort offset pagination). Default is
+
+            0, max is 10000. Offset pagination is non-deterministic when
+
+            multiple rows share the same timestamp; for reliable deep paging
+
+            filter by the last Timestamp value returned in the previous page
+
+            instead of using a large offset.
+
+            '
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key

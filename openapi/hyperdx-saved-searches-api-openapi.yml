@@ -1,0 +1,441 @@
+openapi: 3.2.0
+info:
+  title: HyperDX External Saved Searches API
+  description: API for managing HyperDX alerts and dashboards
+  version: 2.0.0
+servers:
+- url: /
+  description: Your HyperDX instance (http://<host>:<port>)
+security:
+- BearerAuth: []
+tags:
+- name: Saved Searches
+paths:
+  /api/v2/saved-searches:
+    get:
+      summary: List Saved Searches
+      description: Retrieves saved searches for the authenticated team (paginated). Results are capped at `limit` (default and maximum 1000). When more records exist than are returned, `meta.total` exceeds `data.length`; clients with large collections must page with `limit`/`offset` to retrieve them all.
+      operationId: listSavedSearches
+      tags:
+      - Saved Searches
+      parameters:
+      - name: limit
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 1
+          maximum: 1000
+          default: 1000
+        description: Maximum number of saved searches to return.
+      - name: offset
+        in: query
+        required: false
+        schema:
+          type: integer
+          minimum: 0
+          default: 0
+        description: Number of saved searches to skip before returning results.
+      responses:
+        '200':
+          description: Successfully retrieved saved searches
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavedSearchesListResponse'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    post:
+      summary: Create Saved Search
+      description: Creates a new saved search.
+      operationId: createSavedSearch
+      tags:
+      - Saved Searches
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SavedSearchInput'
+      responses:
+        '200':
+          description: Successfully created saved search
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavedSearchResponseEnvelope'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+  /api/v2/saved-searches/{id}:
+    get:
+      summary: Get Saved Search
+      description: Retrieves a specific saved search by ID.
+      operationId: getSavedSearch
+      tags:
+      - Saved Searches
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Saved search ID
+        example: 507f1f77bcf86cd799439011
+      responses:
+        '200':
+          description: Successfully retrieved saved search
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavedSearchResponseEnvelope'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Saved search not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    put:
+      summary: Update Saved Search
+      description: 'Updates an existing saved search. This is a full replace: send the
+
+        full object. Every optional field (`select`, `where`, `whereLanguage`,
+
+        `orderBy`, `tags`, `filters`) is always written and falls back to its
+
+        default when omitted, so omitting a field resets it rather than
+
+        preserving the stored value.
+
+        '
+      operationId: updateSavedSearch
+      tags:
+      - Saved Searches
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Saved search ID
+        example: 507f1f77bcf86cd799439011
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SavedSearchInput'
+      responses:
+        '200':
+          description: Successfully updated saved search
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SavedSearchResponseEnvelope'
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Saved search not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+    delete:
+      summary: Delete Saved Search
+      description: Deletes a saved search and any alerts attached to it.
+      operationId: deleteSavedSearch
+      tags:
+      - Saved Searches
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: string
+        description: Saved search ID
+        example: 507f1f77bcf86cd799439011
+      responses:
+        '200':
+          description: Successfully deleted saved search
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EmptyResponse'
+              example: {}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Saved search not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+components:
+  schemas:
+    SavedSearchFilter:
+      type: object
+      required:
+      - condition
+      description: 'A single pinned filter applied to the search. New or changed filters must use the SQL predicate form the UI produces so they render as a sidebar facet: `<column> IN (''<value1>'', ...)` (or `NOT IN` / `BETWEEN`). Conditions not in this form are rejected on create, and on update unless they are echoed back unchanged from the stored saved search (so a read-modify-write of a legacy filter still succeeds). Note: existing saved searches created in the UI may also return a Lucene text filter (`type: lucene`) or a structured comparison (`type: sql_ast` with `operator`/`left`/`right`); reads return these stored shapes verbatim, and they are preserved on unchanged update.'
+      properties:
+        type:
+          type: string
+          enum:
+          - sql
+          default: sql
+          description: Always `sql`. Only SQL predicate filters render in the sidebar.
+          example: sql
+        condition:
+          type: string
+          maxLength: 8192
+          description: SQL predicate applied to the search, in `<column> IN (...)` form.
+          example: ServiceName IN ('checkout', 'payments')
+    PaginationMeta:
+      type: object
+      required:
+      - total
+      - limit
+      - offset
+      properties:
+        total:
+          type: integer
+          description: Total number of items matching the query, ignoring pagination.
+          example: 142
+        limit:
+          type: integer
+          description: Maximum number of items returned in this page.
+          example: 50
+        offset:
+          type: integer
+          description: Number of items skipped before this page.
+          example: 100
+    SavedSearchesListResponse:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          type: array
+          description: List of saved search objects.
+          items:
+            $ref: '#/components/schemas/SavedSearch'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+          description: Pagination metadata for this result page.
+    SavedSearchInput:
+      type: object
+      required:
+      - name
+      - sourceId
+      properties:
+        name:
+          type: string
+          maxLength: 1024
+          description: Display name for the saved search.
+          example: Production Errors
+        sourceId:
+          type: string
+          description: ID of the source to query. Must belong to the team.
+          example: 507f1f77bcf86cd799439012
+        select:
+          type: string
+          maxLength: 4096
+          description: Comma-separated list of column expressions to display. Empty uses the source default.
+          example: Timestamp, ServiceName, Body
+        where:
+          type: string
+          maxLength: 8192
+          description: Row filter expression. The language is controlled by whereLanguage.
+          example: SeverityText:ERROR
+        whereLanguage:
+          type: string
+          enum:
+          - lucene
+          - sql
+          default: lucene
+          description: Language used for the where filter.
+          example: lucene
+        orderBy:
+          type: string
+          maxLength: 1024
+          description: ORDER BY expression. Empty uses the source default.
+          example: Timestamp DESC
+        tags:
+          type: array
+          maxItems: 50
+          description: Tags used to organize saved searches.
+          items:
+            type: string
+            maxLength: 32
+          example:
+          - production
+          - errors
+        filters:
+          type: array
+          maxItems: 100
+          description: Structured pinned filters applied to the search.
+          items:
+            $ref: '#/components/schemas/SavedSearchFilter'
+          example:
+          - type: sql
+            condition: ServiceName IN ('checkout', 'payments')
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Human-readable error message.
+          example: 'NOT_FOUND: Alert not found'
+    SavedSearchResponseEnvelope:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SavedSearch'
+          description: The saved search object.
+    SavedSearch:
+      type: object
+      required:
+      - id
+      - name
+      - sourceId
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: Unique saved search ID. Server-generated.
+          example: 507f1f77bcf86cd799439011
+        name:
+          type: string
+          description: Display name for the saved search.
+          example: Production Errors
+        sourceId:
+          type: string
+          description: ID of the source this saved search queries.
+          example: 507f1f77bcf86cd799439012
+        select:
+          type: string
+          description: Comma-separated list of column expressions to display. Empty uses the source default.
+          example: Timestamp, ServiceName, Body
+        where:
+          type: string
+          description: Row filter expression. The language is controlled by whereLanguage.
+          example: SeverityText:ERROR
+        whereLanguage:
+          type: string
+          enum:
+          - lucene
+          - sql
+          description: Language used for the where filter.
+          example: lucene
+        orderBy:
+          type: string
+          description: ORDER BY expression. Empty uses the source default.
+          example: Timestamp DESC
+        tags:
+          type: array
+          maxItems: 50
+          items:
+            type: string
+            maxLength: 32
+          description: Tags used to organize saved searches.
+          example:
+          - production
+          - errors
+        filters:
+          type: array
+          maxItems: 100
+          description: Structured pinned filters applied to the search.
+          items:
+            $ref: '#/components/schemas/SavedSearchFilter'
+          example:
+          - type: sql
+            condition: ServiceName IN ('checkout', 'payments')
+        teamId:
+          type: string
+          readOnly: true
+          description: ID of the team that owns the saved search.
+          example: 507f1f77bcf86cd799439013
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Creation timestamp.
+          example: '2025-01-01T00:00:00.000Z'
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+          description: Last update timestamp.
+          example: '2025-06-15T10:30:00.000Z'
+    EmptyResponse:
+      type: object
+      properties: {}
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: API Key

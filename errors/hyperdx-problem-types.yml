@@ -1,0 +1,214 @@
+generated: '2026-08-27'
+method: derived
+source: openapi/hyperdx-external-api-openapi.json
+name: HyperDX Error Catalog
+description: 'Error responses derived from every 4xx/5xx response object in the HyperDX External API v2
+  OpenAPI. HyperDX does not publish an error-reference page, and the API does not use RFC 9457 problem+json:
+  every error is application/json with a single `message` string, whose convention is an uppercase code
+  prefix followed by a human-readable clause (spec example: "NOT_FOUND: Alert not found").'
+format: custom
+rfc9457: false
+media_type: application/json
+envelope:
+  schema: Error
+  fields:
+  - name: message
+    type: string
+    description: Human-readable error message, conventionally prefixed with an uppercase code.
+    example: 'NOT_FOUND: Alert not found'
+problem_types:
+- status: 400
+  title: Bad Request
+  class: client
+  media_type: application/json
+  media_type_note: null
+  spec_descriptions:
+  - Bad request
+  - Bad request or duplicate webhook
+  - Cannot remove yourself from the team
+  - Invalid request parameters
+  - Invalid request parameters or query error
+  - User already exists
+  operations:
+  - createConnection
+  - createDashboard
+  - createSavedSearch
+  - createSource
+  - createWebhook
+  - inviteTeamMember
+  - queryChartSeries
+  - removeTeamMember
+  - searchEvents
+  - updateConnection
+  - updateDashboard
+  - updateSavedSearch
+  - updateSource
+  - updateWebhook
+  operation_count: 14
+  retriable: false
+  remediation: Validate the request body against the operation's requestBody schema before retrying. The
+    same status covers plain schema violations and query-compilation failures, so read the message.
+- status: 401
+  title: Unauthorized
+  class: auth
+  media_type: application/json
+  media_type_note: null
+  spec_descriptions:
+  - Missing or invalid API key
+  - Unauthorized
+  operations:
+  - createAlert
+  - createConnection
+  - createDashboard
+  - createSavedSearch
+  - createSource
+  - createWebhook
+  - deleteAlert
+  - deleteConnection
+  - deleteDashboard
+  - deleteSavedSearch
+  - deleteSource
+  - deleteWebhook
+  - getAlert
+  - getConnection
+  - getDashboard
+  - getSavedSearch
+  - getSource
+  - listAlerts
+  - listConnections
+  - listDashboards
+  - listSavedSearches
+  - listSources
+  - listWebhooks
+  - searchEvents
+  - updateAlert
+  - updateConnection
+  - updateDashboard
+  - updateSavedSearch
+  - updateSource
+  - updateWebhook
+  - validateDashboard
+  operation_count: 31
+  retriable: false
+  remediation: 'Send Authorization: Bearer <personal API access key>. Get or rotate the key in the HyperDX
+    UI under Team Settings > API keys.'
+- status: 403
+  title: Forbidden
+  class: auth
+  media_type: application/json
+  media_type_note: null
+  spec_descriptions:
+  - Forbidden
+  - Unauthorized
+  operations:
+  - createAlert
+  - createSavedSearch
+  - createSource
+  - createWebhook
+  - deleteAlert
+  - deleteSavedSearch
+  - deleteSource
+  - deleteWebhook
+  - getAlert
+  - getSavedSearch
+  - getSource
+  - getTeam
+  - listAlerts
+  - listConnections
+  - listSavedSearches
+  - listSources
+  - listWebhooks
+  - queryChartSeries
+  - updateAlert
+  - updateSavedSearch
+  - updateSource
+  - updateWebhook
+  operation_count: 22
+  retriable: false
+  remediation: The key authenticated but the team or resource is not accessible to it. Check which team
+    the key belongs to; do not retry.
+- status: 404
+  title: Not Found
+  class: client
+  media_type: application/json
+  media_type_note: null
+  spec_descriptions:
+  - Alert not found
+  - Connection not found
+  - Dashboard not found
+  - Invitation not found
+  - Member not found
+  - Saved search not found
+  - Source not found
+  - Source or connection not found
+  - Webhook not found
+  operations:
+  - deleteAlert
+  - deleteConnection
+  - deleteDashboard
+  - deleteSavedSearch
+  - deleteSource
+  - deleteTeamInvitation
+  - deleteWebhook
+  - getAlert
+  - getConnection
+  - getDashboard
+  - getSavedSearch
+  - getSource
+  - queryChartSeries
+  - removeTeamMember
+  - searchEvents
+  - updateAlert
+  - updateConnection
+  - updateDashboard
+  - updateSavedSearch
+  - updateSource
+  - updateWebhook
+  operation_count: 21
+  retriable: false
+  remediation: The id does not exist in this team, or the surface is not served on this host (v2 paths
+    404 on api.hyperdx.io, which serves v1 only). Do not retry without changing the id or the host.
+- status: 409
+  title: Conflict
+  class: conflict
+  media_type: application/json
+  media_type_note: null
+  spec_descriptions:
+  - Webhook is still referenced by one or more alerts
+  - Webhook was modified concurrently; retry with current state
+  operations:
+  - deleteWebhook
+  - updateWebhook
+  operation_count: 2
+  retriable: false
+  remediation: 'Resolve the conflict before retrying: re-read the current state for a concurrent modification,
+    or detach the referencing alerts before deleting a webhook.'
+- status: 500
+  title: Server Error
+  class: server
+  media_type: application/json
+  media_type_note: null
+  spec_descriptions:
+  - Server error
+  - Server error or validation failure
+  operations:
+  - createAlert
+  - createDashboard
+  - queryChartSeries
+  - searchEvents
+  - updateAlert
+  - updateDashboard
+  operation_count: 6
+  retriable: true
+  remediation: Server-side error or a validation failure surfaced late. Safe to retry once with backoff
+    for reads; for writes there is no idempotency key, so a retry may duplicate the resource.
+counts:
+  distinct_statuses: 6
+  total_error_responses: 96
+  operations: 39
+notes:
+- No 429 response is declared on any operation, even though the v1 Cloud host emits IETF RateLimit-* headers.
+- Several 401/403/400/404 response objects declare no content schema at all, so an agent cannot rely on
+  a JSON body being present for those statuses.
+- Error codes observed in spec examples are prefixes inside the message string (e.g. NOT_FOUND), not a
+  separate machine-readable field. There is no published enumeration of those prefixes.
