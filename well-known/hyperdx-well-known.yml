@@ -1,0 +1,63 @@
+generated: '2026-08-27'
+method: probed
+source: direct HTTPS probe of each host on 2026-08-27
+name: HyperDX Well-Known Documents
+description: >-
+  Probe of the standard /.well-known/ discovery paths on every HyperDX host in this profile.
+  Every path returned 404 on both hosts; no WellKnown or SecurityTxt pointer is emitted, because
+  a recorded absence is not a served surface.
+hosts:
+- host: www.hyperdx.io
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    file: null
+  - path: /.well-known/openid-configuration
+    status: 404
+    file: null
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    file: null
+  - path: /.well-known/api-catalog
+    status: 404
+    file: null
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 404
+    file: null
+  - path: /.well-known/agent.json
+    status: 404
+    file: null
+- host: api.hyperdx.io
+  documents:
+  - path: /.well-known/security.txt
+    status: 404
+    file: null
+  - path: /.well-known/openid-configuration
+    status: 404
+    file: null
+  - path: /.well-known/oauth-authorization-server
+    status: 404
+    file: null
+  - path: /.well-known/api-catalog
+    status: 404
+    file: null
+  - path: /.well-known/ai-plugin.json
+    status: 404
+    file: null
+  - path: /.well-known/agent-card.json
+    status: 404
+    file: null
+  - path: /.well-known/agent.json
+    status: 404
+    file: null
+summary:
+  hosts_probed: 2
+  paths_probed: 14
+  documents_served: 0
+notes:
+- No /.well-known/ document is served on either host, so no WellKnown, APICatalog or SecurityTxt
+  pointer was added to apis.yml.
+- The 404s are genuine 404 status codes with an HTML body, not SPA catch-all 200s.

@@ -1,0 +1,46 @@
+generated: '2026-08-27'
+method: searched
+source: https://github.com/hyperdxio/hyperdx/blob/main/README.md
+name: HyperDX Sandbox and Try-It Surfaces
+description: >-
+  HyperDX has no test-mode/live-mode key split and publishes no test fixtures — it is an
+  observability product, not a payments API, so there is nothing to simulate. What it does publish
+  are two ways to exercise the real product without an account: a hosted live demo, and a
+  one-command local stack.
+test_mode:
+  exists: false
+  note: >-
+    No test/live key prefixes, no sandbox host, no test clocks, no fixture or trigger tooling. A
+    personal API access key is a single credential against a real team's real data.
+surfaces:
+- name: Hosted playground
+  type: live-demo
+  url: https://play.hyperdx.io/search
+  status: 200
+  auth_required: false
+  note: >-
+    Public HyperDX instance loaded with demo telemetry, linked from the project README. Lets you
+    drive search, dashboards and traces against real data without signing up.
+- name: Local all-in-one container
+  type: local
+  command: 'docker run -p 8080:8080 -p 4317:4317 -p 4318:4318 hyperdxio/hyperdx-local'
+  docs: https://github.com/hyperdxio/hyperdx/blob/main/README.md
+  auth_required: false
+  note: >-
+    The README's quickstart. Brings up the full stack (app, API, ClickHouse, OTel collector) on
+    localhost:8080 with OTLP receivers on 4317/4318. This is also the only way to reach the v2
+    External API and the MCP server without paying for or deploying anything.
+- name: Free Cloud tier
+  type: free-tier
+  url: https://www.hyperdx.io/register
+  status: 200
+  auth_required: true
+  note: 3 GB/mo, 3-day retention, 1 user, no credit card required. HyperDX Cloud v1 only.
+console:
+  url: https://www.hyperdx.io/register
+  note: The product itself is the console; there is no separate API explorer or request-runner page.
+evidence:
+- url: https://play.hyperdx.io/search
+  status: 200
+- url: https://www.hyperdx.io/register
+  status: 200

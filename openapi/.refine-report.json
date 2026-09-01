@@ -1,0 +1,29 @@
+{
+  "provider": "hyperdx",
+  "sources": [
+    "hyperdx-external-api-openapi.json"
+  ],
+  "outputs": [
+    "hyperdx-alerts-api-openapi.yml",
+    "hyperdx-charts-api-openapi.yml",
+    "hyperdx-connections-api-openapi.yml",
+    "hyperdx-dashboards-api-openapi.yml",
+    "hyperdx-saved-searches-api-openapi.yml",
+    "hyperdx-search-api-openapi.yml",
+    "hyperdx-sources-api-openapi.yml",
+    "hyperdx-team-api-openapi.yml",
+    "hyperdx-webhooks-api-openapi.yml"
+  ],
+  "archived": [
+    "archived openapi/hyperdx-external-api-openapi.json"
+  ],
+  "errors": [],
+  "warnings": [],
+  "notes": [
+    "hyperdx-external-api-openapi.json: upgraded openapi 3.0.0 -> OpenAPI 3.2.0",
+    "hyperdx-external-api-openapi.json: declared missing tag: Saved Searches",
+    "hyperdx-external-api-openapi.json: declared missing tag: Team",
+    "apis.yml register: written (+9 apis, 11 total)"
+  ],
+  "skipped": []
+}

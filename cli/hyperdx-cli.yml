@@ -1,0 +1,81 @@
+generated: '2026-08-27'
+method: searched
+source: https://github.com/hyperdxio/hyperdx/blob/main/packages/cli/README.md
+name: HyperDX CLI (hdx)
+description: >-
+  First-party terminal UI and CLI for HyperDX. The README states it talks to a HyperDX instance
+  (Cloud or self-hosted) and runs the exact same query pipeline as the web app, so terminal results
+  match the browser. It is explicitly built to be driven by agents as well as humans.
+binary: hdx
+package: '@hyperdx/cli'
+version: 0.6.2
+published: '2026-08-21'
+license: MIT
+repository: https://github.com/hyperdxio/hyperdx/tree/main/packages/cli
+docs: https://github.com/hyperdxio/hyperdx/blob/main/packages/cli/README.md
+requirements:
+  node: '>= 22.16'
+install:
+- method: npm-global
+  command: npm install -g @hyperdx/cli
+- method: npx
+  command: npx @hyperdx/cli --help
+commands:
+- group: tui
+  command: hdx tui
+  description: Interactive TUI — searchable, live-tailing table of logs or traces with detail panel, trace waterfall, pattern mining, alerts and dashboards.
+  flags: ['--source <name>', '-q <query>', '-f (follow)']
+- group: chart
+  command: hdx chart -d <dashboard> [-t tile]
+  description: Render dashboard tiles as ANSI charts.
+- group: chart
+  command: hdx chart -s <source> [--agg ...]
+  description: Ad-hoc chart over a source (line, stacked bar, number, table, bar, pie).
+- group: chart
+  command: hdx chart --sql <query> -s <source>
+  description: Ad-hoc chart from raw SQL.
+- group: query
+  command: hdx query --connection-id <id> --sql <query>
+  description: Raw SQL to stdout through the HyperDX proxy, in any ClickHouse output format.
+- group: discovery
+  command: hdx sources
+  description: List data sources with table schemas.
+- group: discovery
+  command: hdx connections
+  description: List ClickHouse connections.
+- group: discovery
+  command: hdx dashboards
+  description: List dashboards with tile summaries.
+- group: auth
+  command: hdx auth login|status|logout
+  description: Manage authentication (interactive login prompts for app URL and credentials).
+- group: team
+  command: hdx team list|current|use <team>
+  description: kubectx-style team switching for users in multiple teams.
+- group: sourcemaps
+  command: hdx upload-sourcemaps
+  description: Upload JavaScript source maps for error symbolication.
+global_flags:
+- flag: -a, --app-url <url>
+  description: Point at a HyperDX instance. Saved after `hdx auth login`, after which the flag is optional.
+key_flows:
+- name: Sign in and explore
+  steps: ['hdx auth login', 'hdx tui']
+- name: Chart error volume by service
+  steps: ["hdx chart -s Logs --where 'SeverityText:error' --group-by ServiceName --since 3h"]
+- name: Raw ClickHouse query
+  steps: ['hdx query --connection-id "$CONN" --sql "SELECT count() FROM default.otel_logs"']
+agent_affordances:
+- '--json output on discovery commands'
+- NDJSON streaming
+- documented exit codes
+- colors stripped automatically when piping
+agent_note: >-
+  The README calls the CLI "Agent-friendly" and says terminal charts are "Designed for
+  troubleshooting from the CLI (including by AI agents)". Together with the MCP server this is a
+  deliberate second agent surface, not an accident of a machine-readable flag.
+evidence:
+- url: https://raw.githubusercontent.com/hyperdxio/hyperdx/main/packages/cli/README.md
+  status: 200
+- url: https://registry.npmjs.org/@hyperdx/cli
+  status: 200

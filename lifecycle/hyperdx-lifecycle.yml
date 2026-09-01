@@ -1,0 +1,78 @@
+generated: '2026-08-27'
+method: searched
+source: https://github.com/hyperdxio/hyperdx/blob/main/CHANGELOG.md + https://hyperdx.statuspage.io/
+name: HyperDX API Lifecycle
+description: >-
+  Versioning, deprecation and operational-status posture for the HyperDX APIs, read from the
+  vendor's own changelog, OpenAPI and status page.
+versioning:
+  strategy: path
+  pattern: /api/v{n}
+  current: v2
+  previous: v1
+  spec_version: 2.0.0
+  product_version: 2.36.0
+  scheme: semver
+  note: >-
+    Two live major versions with different homes. v1 is HyperDX Cloud at api.hyperdx.io and is
+    documented only as prose on hyperdx.io/docs/api. v2 is the "External API", shipped with the
+    open-source/self-hosted build and with ClickStack, and it is the version that has an OpenAPI.
+    GET https://api.hyperdx.io/api/v2/alerts returned 404 on 2026-08-27, confirming v2 is not
+    served on the v1 Cloud host.
+deprecation:
+  policy_published: false
+  policy_url: null
+  sunset_header: false
+  deprecation_header: false
+  rfc8594: false
+  deprecated_operations: []
+  breaking_change_communication: changelog
+  breaking_change_url: https://github.com/hyperdxio/hyperdx/blob/main/CHANGELOG.md
+  note: >-
+    HyperDX publishes no formal deprecation policy and sends no Deprecation/Sunset headers, and no
+    operation in the v2 OpenAPI is marked deprecated. What it does do is name every breaking change
+    under an explicit "💥 Breaking Changes" heading in each release, with the migration action
+    stated — e.g. 2.34.0 changed the external dashboards API per-tile series limit to a three-state
+    value and told clients relying on omission to start sending 0. That is a change log, not a
+    deprecation contract: there is no advertised notice window.
+breaking_changes_recent:
+- version: 2.36.0
+  date: '2026-08-21'
+  change: API default log level moves from debug to info; query SQL no longer printed.
+- version: 2.35.0
+  date: '2026-08-14'
+  change: Terraform export emits team-scoped import ids; provider floor >= 3.25.0.
+- version: 2.34.0
+  date: '2026-08-07'
+  change: External dashboards API per-tile series limit becomes three-state; omission now means "default cap", not "all".
+- version: 2.29.0
+  date: '2026-06-30'
+  change: Webhook destinations validated against SSRF protections; internal hosts need WEBHOOK_HOSTNAME_ALLOWLIST.
+status_page:
+  url: https://hyperdx.statuspage.io/
+  provider: Atlassian Statuspage
+  api: https://hyperdx.statuspage.io/api/v2/status.json
+  status: 200
+  verified: '2026-08-27'
+  observed: '{"page":{"name":"HyperDX"},"status":{"indicator":"none","description":"All Systems Operational"}}'
+  note: >-
+    Machine-readable via the standard Statuspage v2 API. The page metadata's own updated_at was
+    2026-05-21, so incident posting is infrequent — which for a status page is ambiguous news.
+sla:
+  published: false
+  note: No public SLA document was found; Enterprise terms are quote-only.
+support:
+  email: support@hyperdx.io
+  community: https://www.hyperdx.io/discord
+  issues: https://github.com/hyperdxio/hyperdx/issues
+release_cadence:
+  observed: weekly
+  window: '2026-06-30 to 2026-08-21'
+  releases_in_window: 8
+evidence:
+- url: https://hyperdx.statuspage.io/api/v2/status.json
+  status: 200
+- url: https://api.hyperdx.io/api/v2/alerts
+  status: 404
+- url: https://raw.githubusercontent.com/hyperdxio/hyperdx/main/CHANGELOG.md
+  status: 200

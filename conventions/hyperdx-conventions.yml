@@ -1,0 +1,164 @@
+generated: '2026-08-27'
+method: derived
+source: openapi/hyperdx-external-api-openapi.json + https://www.hyperdx.io/docs/api/alerts + probed api.hyperdx.io
+name: HyperDX API Conventions
+description: >-
+  Cross-cutting runtime semantics for the HyperDX External API v2 and the HyperDX Cloud v1 API —
+  what an agent needs to know before it calls, retries, pages, or writes.
+authentication:
+  style: bearer-token
+  scheme: http bearer
+  header: 'Authorization: Bearer <personal API access key>'
+  bearer_format: API Key
+  credential_source: HyperDX UI > Team Settings > API keys > Personal API access key
+  rotation: >-
+    Release 2.36.0 (2026-08-21) added rotation of the personal API access key; before that the key
+    was fixed for the life of the account.
+  scopes: none
+  oauth2: false
+  detail: authentication/hyperdx-authentication.yml
+idempotency:
+  supported: false
+  header: null
+  scope: null
+  retention: null
+  note: >-
+    No Idempotency-Key header, and the string "idempoten" does not appear anywhere in the v2
+    OpenAPI. Writes are plain POST/PUT/DELETE. The one concurrency control present is optimistic:
+    PUT/DELETE on /api/v2/webhooks/{id} can return 409 "Webhook was modified concurrently; retry
+    with current state" — that protects against a lost update, not against a duplicate create.
+    An agent retrying a failed POST /api/v2/dashboards will create a second dashboard.
+pagination:
+  style: limit-offset
+  request_params:
+  - name: limit
+    in: query
+    description: Maximum number of items to return.
+  - name: offset
+    in: query
+    description: Number of items to skip before returning results.
+  response_envelope: meta
+  response_fields:
+  - total
+  - limit
+  - offset
+  schema: PaginationMeta
+  cursor: false
+  note: >-
+    Offset pagination with a `total`. Applied on the collection listings (alerts, webhooks and
+    peers); several list operations return the full collection with no paging parameters at all,
+    so an agent must not assume every list is paged.
+field_expansion:
+  supported: false
+sparse_fields:
+  supported: false
+metadata:
+  supported: false
+  note: No free-form `metadata` object on the core resources.
+request_tracing:
+  request_id_header: false
+  note: >-
+    No X-Request-Id or requestId is defined in the spec or observed on live responses from
+    api.hyperdx.io. Correlating a failed call with server-side telemetry is not possible from the
+    response alone — a notable gap for an observability vendor.
+versioning:
+  style: url-path
+  current: /api/v2
+  legacy: /api/v1
+  detail: lifecycle/hyperdx-lifecycle.yml
+error_envelope:
+  shape: '{ "message": "<CODE>: <human-readable message>" }'
+  media_type: application/json
+  schema: Error
+  rfc9457: false
+  code_field: false
+  note: >-
+    A single `message` string. The machine-readable part is a convention inside the string — the
+    spec's own example is "NOT_FOUND: Alert not found" — not a separate field. Detail in
+    errors/hyperdx-problem-types.yml.
+rate_limit_signaling:
+  headers:
+  - ratelimit-limit
+  - ratelimit-remaining
+  - ratelimit-reset
+  form: IETF RateLimit-* (lowercase draft form)
+  observed_on: https://api.hyperdx.io (v1 Cloud)
+  declared_in_spec: false
+  note: >-
+    The v2 OpenAPI defines no 429 response on any of its 39 operations. The headers above were
+    read off a live v1 Cloud response. Detail in rate-limits/hyperdx-rate-limits.yml.
+content_type:
+  request: application/json
+  response: application/json
+dry_run_mode:
+  supported: partial
+  operations:
+  - validateDashboard
+  note: >-
+    POST /api/v2/dashboards/validate checks a dashboard payload without persisting it, and the MCP
+    tools clickstack_query_tile / clickstack_query_tiles execute a tile's query to validate results
+    before saving. That is a rehearsal path for dashboards only; there is no dry-run for alerts,
+    sources, connections or webhooks.
+reversibility:
+  grade: absent
+  write_surface: true
+  summary: >-
+    HyperDX has a full CRUD write surface and no reversal path anywhere in it. There is no cancel,
+    undo, restore, trash, soft-delete or version history on any resource, and no documented window
+    in which a delete can be taken back. An agent that calls a delete on this API has taken an
+    irreversible action.
+  surfaces:
+  - resource: Dashboard
+    write_operations: [createDashboard, updateDashboard, deleteDashboard]
+    reversal_operation: null
+    window: null
+    note: >-
+      The vendor's own MCP tool description for the equivalent tool reads "Permanently delete a
+      dashboard and its attached alerts" — the delete cascades to attached alerts and is stated to
+      be permanent.
+  - resource: Alert
+    write_operations: [createAlert, updateAlert, deleteAlert]
+    reversal_operation: null
+    window: null
+    note: >-
+      Alerts can be silenced (the AlertSilenced schema exists), which suspends notification but is
+      not a reversal of a delete.
+  - resource: Source
+    write_operations: [createSource, updateSource, deleteSource]
+    reversal_operation: null
+    window: null
+    note: 'MCP equivalent is described as "Permanently delete a data source by ID".'
+  - resource: SavedSearch
+    write_operations: [createSavedSearch, updateSavedSearch, deleteSavedSearch]
+    reversal_operation: null
+    window: null
+  - resource: Connection
+    write_operations: [createConnection, updateConnection, deleteConnection]
+    reversal_operation: null
+    window: null
+  - resource: Webhook
+    write_operations: [createWebhook, updateWebhook, deleteWebhook]
+    reversal_operation: null
+    window: null
+    note: >-
+      The only guard on the API: DELETE and PUT return 409 while the webhook is still referenced by
+      an alert, or if it was modified concurrently. This is a referential-integrity block placed
+      BEFORE the destructive act — the closest thing to safety here, and it is not a reversal.
+  - resource: Team membership
+    write_operations: [inviteTeamMember, deleteTeamInvitation, removeTeamMember]
+    reversal_operation: deleteTeamInvitation
+    window: null
+    note: >-
+      An outstanding invitation can be withdrawn before it is accepted, which is a genuine reversal
+      of inviteTeamMember. No window is stated for how long an invitation stays outstanding, and
+      removeTeamMember itself has no reversal beyond re-inviting. Not enough to lift the grade.
+  no_invented_windows: >-
+    No retention or restore window is asserted here because HyperDX states none. Data retention
+    (3 days Free, 30 days Starter) is a telemetry TTL, not a window in which a deleted dashboard,
+    alert or source can be recovered, and must not be read as one.
+cross_links:
+  errors: errors/hyperdx-problem-types.yml
+  lifecycle: lifecycle/hyperdx-lifecycle.yml
+  authentication: authentication/hyperdx-authentication.yml
+  rate_limits: rate-limits/hyperdx-rate-limits.yml
+  mcp: mcp/hyperdx-mcp.yml

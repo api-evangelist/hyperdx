@@ -1,0 +1,141 @@
+generated: '2026-08-27'
+method: searched
+source: https://www.npmjs.com/org/hyperdx + https://pypi.org/project/hyperdx-opentelemetry/ + https://rubygems.org/gems/hyperdx-ruby + https://github.com/hyperdxio
+name: HyperDX Packages
+description: >-
+  First-party HyperDX client libraries, OpenTelemetry SDK distributions and the terminal CLI,
+  read from the public package registries. Version and publish date are read from each registry's
+  unauthenticated metadata endpoint on 2026-08-27.
+packages:
+- name: '@hyperdx/node-opentelemetry'
+  registry: npm
+  language: JavaScript
+  official: true
+  version: 0.11.0
+  published: '2026-05-26'
+  url: https://www.npmjs.com/package/@hyperdx/node-opentelemetry
+  repository: https://github.com/hyperdxio/hyperdx-js
+  docs: https://www.hyperdx.io/docs/install/javascript
+  note: OpenTelemetry Node.js distribution — auto-instrumentation plus log shipping to HyperDX.
+- name: '@hyperdx/browser'
+  registry: npm
+  language: JavaScript
+  official: true
+  version: 0.25.1
+  published: '2026-07-13'
+  url: https://www.npmjs.com/package/@hyperdx/browser
+  repository: https://github.com/hyperdxio/hyperdx-js
+  docs: https://www.hyperdx.io/docs/install/browser
+  note: Browser SDK — session replay, front-end traces and console/network capture.
+- name: '@hyperdx/node-logger'
+  registry: npm
+  language: JavaScript
+  official: true
+  version: 0.5.0
+  published: '2026-05-26'
+  url: https://www.npmjs.com/package/@hyperdx/node-logger
+  repository: https://github.com/hyperdxio/hyperdx-js
+  note: Node.js logging transport (Winston/Pino) that ships logs to HyperDX.
+- name: '@hyperdx/instrumentation-exception'
+  registry: npm
+  language: JavaScript
+  official: true
+  version: 0.3.0
+  published: '2026-05-26'
+  url: https://www.npmjs.com/package/@hyperdx/instrumentation-exception
+  repository: https://github.com/hyperdxio/hyperdx-js
+  note: Exception/error instrumentation used by the Node and browser distributions.
+- name: '@hyperdx/instrumentation-sentry-node'
+  registry: npm
+  language: JavaScript
+  official: true
+  version: 0.2.1
+  published: '2026-07-13'
+  url: https://www.npmjs.com/package/@hyperdx/instrumentation-sentry-node
+  repository: https://github.com/hyperdxio/hyperdx-js
+  note: Bridges Sentry SDK events into the HyperDX OpenTelemetry pipeline.
+- name: '@hyperdx/otel-react-native'
+  registry: npm
+  language: JavaScript
+  official: true
+  version: 0.3.0
+  published: '2025-01-22'
+  url: https://www.npmjs.com/package/@hyperdx/otel-react-native
+  repository: https://github.com/hyperdxio/hyperdx-otel-react-native
+  docs: https://www.hyperdx.io/docs/install/react-native
+  note: React Native OpenTelemetry distribution. Last publish 2025-01-22 — the oldest first-party npm SDK in the set.
+- name: '@hyperdx/cli'
+  registry: npm
+  language: JavaScript
+  official: true
+  version: 0.6.2
+  published: '2026-08-21'
+  url: https://www.npmjs.com/package/@hyperdx/cli
+  repository: https://github.com/hyperdxio/hyperdx/tree/main/packages/cli
+  note: Installs the `hdx` binary — terminal UI and CLI over the same query pipeline as the web app.
+- name: '@hyperdx/common-utils'
+  registry: npm
+  language: JavaScript
+  official: true
+  version: 0.0.14
+  published: '2025-02-04'
+  url: https://www.npmjs.com/package/@hyperdx/common-utils
+  note: >-
+    Shared internal utilities. The npm dist-tag `latest` sits at 0.0.14 (2025-02-04) while the
+    monorepo tags releases at @hyperdx/common-utils@0.27.0 (2026-08-21) — the GitHub release tag
+    and the npm published version disagree, so a consumer resolving from npm gets the 2025 build.
+- name: '@hyperdx/lucene'
+  registry: npm
+  language: JavaScript
+  official: true
+  version: 3.1.1
+  published: '2023-06-17'
+  url: https://www.npmjs.com/package/@hyperdx/lucene
+  repository: https://github.com/hyperdxio/lucene
+  note: Fork of the lucene query parser used by HyperDX search. Unchanged since 2023-06-17.
+- name: hyperdx-opentelemetry
+  registry: pypi
+  language: Python
+  official: true
+  version: 0.4.0
+  published: '2026-07-27'
+  url: https://pypi.org/project/hyperdx-opentelemetry/
+  repository: https://github.com/hyperdxio/hyperdx-py
+  docs: https://www.hyperdx.io/docs/install/python
+  note: HyperDX OpenTelemetry Distro for Python.
+- name: hyperdx-ruby
+  registry: rubygems
+  language: Ruby
+  official: true
+  version: 0.1.2
+  published: '2023-05-16'
+  url: https://rubygems.org/gems/hyperdx-ruby
+  repository: https://github.com/hyperdxio/hyperdx-ruby
+  docs: https://www.hyperdx.io/docs/install/ruby
+  note: >-
+    HyperDX Ruby SDK. Last release 2023-05-16 — predates the v2 External API entirely; treat as
+    an ingestion-only shim, not a client for the management API.
+- name: hyperdxio/hyperdx-local
+  registry: dockerhub
+  language: n/a
+  official: true
+  version: null
+  published: null
+  url: https://hub.docker.com/r/hyperdxio/hyperdx-local
+  note: >-
+    All-in-one container referenced by the project README and DEPLOY.md. Not probed against a
+    registry metadata endpoint in this pass, so version/published are recorded null rather than guessed.
+counts:
+  total: 12
+  official: 12
+  registries:
+    npm: 9
+    pypi: 1
+    rubygems: 1
+    dockerhub: 1
+notes:
+- The npm `@hyperdx` scope search endpoint returned 0 results; every package above was resolved
+  by direct registry metadata lookup, not by scope enumeration.
+- Server-side monorepo packages (@hyperdx/api, @hyperdx/app, @hyperdx/otel-collector, @hyperdx/hdx-eval)
+  carry GitHub release tags but are NOT published to npm (registry returns "Not found") — they ship
+  as Docker images, not libraries.

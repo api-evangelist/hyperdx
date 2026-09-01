@@ -1,0 +1,89 @@
+generated: '2026-08-27'
+method: searched
+source: https://github.com/hyperdxio/hyperdx/blob/main/CHANGELOG.md
+name: HyperDX Change Log
+description: >-
+  HyperDX ships a dated, release-level CHANGELOG.md at the root of its open-source monorepo, with
+  per-package detail in packages/*/CHANGELOG.md. Entries are drafted during the release PR and
+  reviewed by the team before merge. There is no changelog page on hyperdx.io — the repository is
+  the published record.
+url: https://github.com/hyperdxio/hyperdx/blob/main/CHANGELOG.md
+raw_url: https://raw.githubusercontent.com/hyperdxio/hyperdx/main/CHANGELOG.md
+releases_url: https://github.com/hyperdxio/hyperdx/releases
+versioning:
+  scheme: semver
+  cadence: roughly weekly (Thursday-dated releases through July and August 2026)
+  current_version: 2.36.0
+  current_version_date: '2026-08-21'
+  api_version: '2.0.0'
+  api_version_note: The External API OpenAPI declares info.version 2.0.0 and paths under /api/v2.
+  per_package: true
+  changesets: true
+  changesets_note: The repo uses .changeset/ files, so package versions move independently of the app version.
+breaking_changes_section: true
+breaking_changes_section_note: >-
+  Every release carries an explicit "💥 Breaking Changes" heading before features, and the entries
+  name the migration action. This is unusually legible for an observability vendor.
+entries:
+- version: 2.36.0
+  date: '2026-08-21'
+  breaking:
+  - >-
+    The API's log level now defaults to `info` and query SQL is no longer dumped to the console —
+    set HYPERDX_LOG_LEVEL=debug to restore it (#2679).
+  additions:
+  - Formulas on metric, log and trace charts (letter-ref arithmetic over a chart's own series).
+  - Formulas readable and writable over the external API, MCP save_dashboard/patch_dashboard, and the CLI.
+  - Up to ten notification webhooks per alert; Edit/Delete on the alert details page.
+  - Personal API access key can now be rotated.
+  - Per-signal ClickHouse table TTLs, configurable exporter timeout, new /ready probe.
+- version: 2.35.0
+  date: '2026-08-14'
+  breaking:
+  - >-
+    Terraform export emits team-scoped import ids (<team_id>/<resource_id>); provider floor moves
+    to >= 3.25.0 and import files from earlier releases carry the old bare ids (#2898).
+  additions:
+  - 'Alert evaluation history over the API: GET /alerts/:id/evaluations returns per-window results.'
+- version: 2.34.0
+  date: '2026-08-07'
+  breaking:
+  - >-
+    Time charts cap high-cardinality series by default. Over the external dashboards API the
+    per-tile series limit is now three-state — omit for the default cap, 0 for unlimited, or a
+    positive N — so a client that relied on omitting the field to get every series must send 0 (#2802).
+  additions:
+  - Export existing dashboards, saved searches and alerts to Terraform.
+- version: 2.32.0
+  date: '2026-07-27'
+  breaking: []
+  additions: []
+  note: Entry present in CHANGELOG.md; details not transcribed in this pass.
+- version: 2.31.0
+  date: '2026-07-17'
+  breaking: []
+  additions: []
+  note: Entry present in CHANGELOG.md; details not transcribed in this pass.
+- version: 2.30.1
+  date: '2026-07-13'
+  breaking: []
+  additions: []
+- version: 2.30.0
+  date: '2026-07-10'
+  breaking: []
+  additions: []
+- version: 2.29.0
+  date: '2026-06-30'
+  breaking:
+  - >-
+    Stricter, standardised webhook URL validation — deliveries to private or reserved addresses are
+    blocked by default; add internal hosts to WEBHOOK_HOSTNAME_ALLOWLIST (#2672).
+  additions:
+  - OpenTelemetry span links in the trace view.
+entry_count: 8
+window: '2026-06-30 to 2026-08-21'
+evidence:
+- url: https://raw.githubusercontent.com/hyperdxio/hyperdx/main/CHANGELOG.md
+  status: 200
+- url: https://github.com/hyperdxio/hyperdx/releases
+  status: 200

@@ -1,0 +1,49 @@
+generated: '2026-08-27'
+method: generated
+source: openapi/hyperdx-external-api-openapi.json + mcp/hyperdx-mcp.yml
+name: HyperDX Agent Skills
+description: >-
+  Packaged agent skills for the HyperDX External API v2 and the ClickStack MCP server. Every
+  operationId referenced in these skills was read out of the vendor's published OpenAPI; none was
+  invented. Each skill carries the runtime rules an agent needs before it acts — no idempotency
+  key, no reversal path, the instance-scoped base URL, and the 409 guard on webhook deletes.
+skills:
+- name: hyperdx-investigate-incident
+  file: hyperdx-investigate-incident.md
+  api: hyperdx:hyperdx-external-api
+  writes: false
+  operations: [listSources, getSource, queryChartSeries, searchEvents]
+  description: Find the spike, chart it, narrow it, read the rows, follow the correlation graph.
+- name: hyperdx-create-alert
+  file: hyperdx-create-alert.md
+  api: hyperdx:hyperdx-external-api
+  writes: true
+  destructive: true
+  operations: [listWebhooks, createWebhook, listSavedSearches, createSavedSearch, listAlerts, createAlert, getAlert, updateAlert, deleteAlert]
+  description: Create a threshold alert and the webhook destination it notifies, with the mutually-exclusive attachment rules spelled out.
+- name: hyperdx-manage-dashboards
+  file: hyperdx-manage-dashboards.md
+  api: hyperdx:hyperdx-external-api
+  writes: true
+  destructive: true
+  operations: [listSources, listDashboards, getDashboard, validateDashboard, createDashboard, updateDashboard, deleteDashboard, queryChartSeries]
+  description: Build and update dashboards using the validate endpoint as a dry run; covers the 2.34.0 series-cap and 2.36.0 formula changes.
+- name: hyperdx-configure-source
+  file: hyperdx-configure-source.md
+  api: hyperdx:hyperdx-external-api
+  writes: true
+  destructive: true
+  operations: [listConnections, createConnection, getConnection, updateConnection, listSources, getSource, createSource, updateSource, deleteSource]
+  description: Register a ClickHouse connection, map a table onto the OpenTelemetry model, and wire the source correlation graph.
+- name: hyperdx-connect-mcp
+  file: hyperdx-connect-mcp.md
+  api: hyperdx:hyperdx-mcp-server
+  writes: false
+  operations: []
+  description: Connect an MCP client to the instance-scoped server and pick the eight tools that have no REST equivalent.
+skill_count: 5
+notes:
+- 'Provider-published agent docs exist but are NOT API skills: hyperdxio/hyperdx ships AGENTS.md,
+  CLAUDE.md and four .claude/skills/ entries (data-source-icons, page-layout, playwright,
+  refactor-component). Those instruct agents contributing to the HyperDX codebase, not agents
+  calling the HyperDX API, so they were not saved as skills here.'

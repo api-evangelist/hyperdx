@@ -1,0 +1,94 @@
+overlay: 1.0.0
+info:
+  title: API Evangelist enrichment overlay for the HyperDX External API
+  version: 1.0.0
+  x-generated: '2026-08-27'
+  x-method: generated
+  x-source: openapi/hyperdx-external-api-openapi.json
+  x-note: >-
+    Additive only. Records what the API Evangelist enrichment pass established about the HyperDX
+    External API that the vendor's own spec does not state — the real server host situation, the
+    runtime rate-limit signal observed on the sibling v1 host, the absence of idempotency, and the
+    irreversibility of every delete. The upstream openapi/hyperdx-external-api-openapi.json is
+    never mutated.
+extends: openapi/hyperdx-external-api-openapi.json
+actions:
+- target: $.info
+  update:
+    x-apievangelist-profile: https://apis.io/provider/hyperdx
+    x-contract-source: https://github.com/hyperdxio/hyperdx/blob/main/packages/api/openapi.json
+    x-license: MIT
+    x-parent-company: ClickHouse, Inc. (acquired HyperDX in March 2025)
+    x-domain-standard: OpenTelemetry
+- target: $.servers
+  description: >-
+    The published servers[] entry is the relative URL "/" with the description "Your HyperDX
+    instance (http://<host>:<port>)". That is accurate but names no host, so it is annotated rather
+    than replaced — replacing it with api.hyperdx.io would be wrong: that host serves v1 only and
+    returns 404 for every /api/v2 path (probed 2026-08-27).
+  update:
+    x-server-is-instance-scoped: true
+    x-not-served-on: https://api.hyperdx.io
+    x-deployment-modes:
+    - self-hosted (docker run hyperdxio/hyperdx-local, app on :8080)
+    - ClickStack in ClickHouse Cloud
+- target: $
+  update:
+    x-rate-limit-signal:
+      declared_in_spec: false
+      observed_on: https://api.hyperdx.io
+      headers:
+      - ratelimit-limit
+      - ratelimit-remaining
+      - ratelimit-reset
+      observed_values: 'limit 100 / window 60s'
+      note: >-
+        No 429 response is declared on any of the 39 operations. The IETF RateLimit-* headers above
+        were observed on a live unauthenticated response from the sibling v1 host on 2026-08-27,
+        and are NOT asserted for a self-hosted v2 instance.
+    x-idempotency:
+      supported: false
+      note: No Idempotency-Key header anywhere in the contract; a retried POST creates a duplicate.
+    x-reversibility:
+      grade: absent
+      note: >-
+        No cancel, undo, restore or soft-delete on any resource, and no documented recovery window.
+        Deleting a dashboard cascades to its attached alerts.
+    x-agent-surfaces:
+      mcp: '{your-hyperdx-url}/api/mcp'
+      mcp_tools: 27
+      cli: '@hyperdx/cli (hdx)'
+      crosswalk: mcp/hyperdx-tool-crosswalk.yml
+- target: $.paths['/api/v2/dashboards/{id}'].delete
+  update:
+    x-destructive: true
+    x-cascades-to: attached alerts
+    x-reversible: false
+- target: $.paths['/api/v2/sources/{id}'].delete
+  update:
+    x-destructive: true
+    x-reversible: false
+- target: $.paths['/api/v2/alerts/{id}'].delete
+  update:
+    x-destructive: true
+    x-reversible: false
+- target: $.paths['/api/v2/webhooks/{id}'].delete
+  update:
+    x-destructive: true
+    x-reversible: false
+    x-guarded: >-
+      Returns 409 while any alert still references this webhook. The only pre-destructive guard in
+      the contract.
+- target: $.components.schemas.Error
+  update:
+    x-error-format: custom
+    x-rfc9457: false
+    x-code-convention: >-
+      The machine-readable code is a prefix inside the message string (e.g. "NOT_FOUND: Alert not
+      found"), not a separate field. No enumeration of prefixes is published.
+    x-catalog: errors/hyperdx-problem-types.yml
+- target: $.components.schemas.WebhookInput
+  update:
+    x-update-asymmetry: >-
+      On PUT, omitted readable fields are cleared while omitted headers/queryParams are preserved —
+      unless url or service changed, in which case they are cleared too.

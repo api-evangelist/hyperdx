@@ -1,0 +1,156 @@
+generated: '2026-08-27'
+method: derived
+source: openapi/hyperdx-external-api-openapi.json + https://www.hyperdx.io/docs + https://github.com/hyperdxio/hyperdx
+name: HyperDX Standards Conformance
+description: >-
+  Cross-cutting and domain-standard conformance for HyperDX, asserted only where the contract or
+  the vendor's own published surface shows it. HyperDX's market — observability — does have a
+  domain standard, and HyperDX is built on it rather than merely claiming it.
+standards:
+- id: openapi
+  name: OpenAPI Specification
+  conforms: true
+  version: 3.0.0
+  evidence:
+    location: openapi/hyperdx-external-api-openapi.json
+    detail: >-
+      Declares openapi 3.0.0, info.title "HyperDX External API", 39 operations across 7 tags, 143
+      component schemas, and every operation carries an operationId, summary, tags and typed
+      responses. Published in the vendor's own repo at packages/api/openapi.json.
+- id: opentelemetry
+  name: OpenTelemetry
+  conforms: true
+  domain_standard: true
+  market: observability
+  evidence:
+    location: openapi/hyperdx-external-api-openapi.json components.schemas.LogSource / TraceSource / MetricSource
+    detail: >-
+      This is the domain-standard signature, and it is in the contract rather than on a marketing
+      page. The Source schemas exist to map a ClickHouse table onto the OpenTelemetry data model
+      field by field — timestampValueExpression, serviceNameExpression, serviceVersionExpression,
+      severityTextExpression, bodyExpression, eventAttributesExpression, resourceAttributesExpression,
+      traceIdExpression, spanIdExpression, parentSpanIdExpression, spanNameExpression,
+      spanKindExpression, statusCodeExpression, durationExpression. MetricSource carries
+      metricTables keyed by OTel metric kind (gauge, sum, histogram), and MetricDataType enumerates
+      Sum/Gauge/Histogram. The 2.29.0 release added OpenTelemetry span links to the trace view.
+    corroboration: >-
+      Ingestion is OTLP — the published quickstart exposes receivers on 4317 (gRPC) and 4318 (HTTP),
+      and the collector is an opinionated distribution of the OpenTelemetry Collector.
+  note: >-
+    A consumer already emitting OpenTelemetry integrates with no bespoke connector. This is the
+    reward-only domain-standard check firing on real contract evidence.
+- id: opamp
+  name: Open Agent Management Protocol (OpAMP)
+  conforms: true
+  evidence:
+    location: https://clickhouse.com/docs/use-cases/observability/clickstack/ingesting-data/otel-collector
+    detail: >-
+      The ClickStack collector distribution includes an OpAMP supervisor that pulls its OTLP
+      endpoint configuration from the HyperDX API. Documented by the vendor; not probed here.
+- id: promql
+  name: PromQL / Prometheus
+  conforms: partial
+  evidence:
+    location: openapi/hyperdx-external-api-openapi.json components.schemas.PromqlSource
+    detail: >-
+      A PromqlSource variant exists in the Source union and Connection carries an
+      isPrometheusEndpoint flag, so Prometheus-compatible endpoints are a first-class source kind.
+      No statement of PromQL feature coverage is published, hence partial.
+- id: sql
+  name: ClickHouse SQL
+  conforms: true
+  evidence:
+    location: openapi/hyperdx-external-api-openapi.json components.schemas.RawSqlChartConfigBase
+    detail: >-
+      Chart tiles can be authored either through the builder or as raw ClickHouse SQL, and the CLI
+      and MCP surfaces both expose a raw-SQL path. The query language is not abstracted away.
+- id: lucene
+  name: Lucene query syntax
+  conforms: true
+  evidence:
+    location: openapi/hyperdx-external-api-openapi.json components.schemas.QueryLanguage
+    detail: >-
+      QueryLanguage discriminates between Lucene-style and SQL `where` clauses on saved searches
+      and chart configs. HyperDX maintains its own fork of the parser at hyperdxio/lucene.
+- id: mcp
+  name: Model Context Protocol
+  conforms: true
+  version: Streamable HTTP transport
+  evidence:
+    location: https://github.com/hyperdxio/hyperdx/blob/main/MCP.md
+    detail: 27-tool first-party MCP server at /api/mcp with Bearer authentication and MCP prompts for dashboard authoring.
+- id: oauth2
+  name: OAuth 2.0
+  conforms: false
+  evidence:
+    location: openapi/hyperdx-external-api-openapi.json components.securitySchemes
+    detail: Only a single `http bearer` scheme is declared. No oauth2 flows anywhere in the spec, and no /.well-known/oauth-authorization-server on either host (404).
+- id: oidc
+  name: OpenID Connect
+  conforms: false
+  evidence:
+    location: probe
+    detail: /.well-known/openid-configuration returned 404 on www.hyperdx.io and api.hyperdx.io on 2026-08-27.
+- id: rfc9457
+  name: 'RFC 9457: Problem Details for HTTP APIs'
+  conforms: false
+  evidence:
+    location: openapi/hyperdx-external-api-openapi.json components.schemas.Error
+    detail: Errors are application/json with a single `message` string, not application/problem+json.
+- id: idempotency
+  name: Idempotency keys (draft-ietf-httpapi-idempotency-key-header)
+  conforms: false
+  evidence:
+    location: openapi/hyperdx-external-api-openapi.json
+    detail: The string "idempoten" appears nowhere in the spec. No Idempotency-Key header on any write operation.
+- id: pagination
+  name: Consistent pagination
+  conforms: partial
+  evidence:
+    location: openapi/hyperdx-external-api-openapi.json components.schemas.PaginationMeta
+    detail: >-
+      limit/offset with a PaginationMeta envelope carrying total/limit/offset — but only on some
+      list operations; others return the whole collection unpaged.
+- id: rfc8594
+  name: 'RFC 8594: Sunset HTTP Header'
+  conforms: false
+  evidence:
+    location: lifecycle/hyperdx-lifecycle.yml
+    detail: No Deprecation or Sunset headers, and no published deprecation policy.
+- id: rfc9116
+  name: 'RFC 9116: security.txt'
+  conforms: false
+  evidence:
+    location: well-known/hyperdx-well-known.yml
+    detail: /.well-known/security.txt returned 404 on both hosts on 2026-08-27.
+- id: scim
+  name: SCIM
+  conforms: false
+  evidence:
+    location: openapi/hyperdx-external-api-openapi.json
+    detail: >-
+      Team membership is managed by bespoke operations (inviteTeamMember, removeTeamMember) with no
+      SCIM schema URNs. Enterprise offers SAML SSO for sign-in but no SCIM provisioning surface.
+- id: saml
+  name: SAML 2.0
+  conforms: true
+  tier: enterprise
+  evidence:
+    location: https://www.hyperdx.io/pricing
+    detail: SAML SSO listed as an Enterprise feature; the org also maintains a fork of node-saml.
+compliance:
+  certifications_published: false
+  trust_center: null
+  note: >-
+    No SOC 2, ISO 27001, PCI, HIPAA or FedRAMP attestation is published on hyperdx.io, and
+    probe-security-programs.py found no trust center and no vulnerability-disclosure program
+    (vdp=none trust=none). No Compliance pointer is emitted, because there is nothing published to
+    point at. Buyers needing an attestation should note that ClickHouse, the parent company since
+    March 2025, publishes its own — that is a different legal entity's document and is not asserted
+    here on HyperDX's behalf.
+counts:
+  asserted: 16
+  conforms_true: 8
+  conforms_partial: 2
+  conforms_false: 6
+  domain_standards: 1

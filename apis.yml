@@ -270,6 +270,9 @@ apis:
   - type: DataModel
     url: data-model/hyperdx-data-model.yml
 common:
+- type: License
+  name: MIT
+  url: https://github.com/hyperdxio/hyperdx/blob/main/LICENSE
 - type: DomainSecurity
   url: security/hyperdx-domain-security.yml
 - type: Authentication
