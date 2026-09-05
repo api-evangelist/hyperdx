@@ -365,3 +365,6 @@ x-enrichment:
   status: enriched
   artifacts_added: 26
   pass: local-v1
+x-parent: clickhouse
+x-relationship: acquisition
+x-acquired: 2025
