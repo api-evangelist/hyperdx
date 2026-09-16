@@ -1,15 +1,13 @@
 aid: hyperdx
 name: HyperDX
-description: >-
-  HyperDX is an open-source observability platform that unifies logs, metrics, traces, session
-  replay and errors on top of ClickHouse and OpenTelemetry, giving engineers one place to search
-  raw events, correlate a log line to its trace and that span to a session replay, build dashboards
-  and run threshold alerts. It ships as an MIT-licensed self-hostable stack (the app, a Node.js API,
-  an opinionated OpenTelemetry collector distribution and ClickHouse), as HyperDX Cloud at
-  hyperdx.io, and as the user interface of ClickStack after ClickHouse acquired the company in
-  March 2025. Its developer surface is a REST management API for dashboards, alerts, sources,
-  saved searches, connections and webhooks, plus a first-party MCP server and an agent-friendly
-  terminal CLI.
+description: HyperDX is an open-source observability platform that unifies logs, metrics, traces, session
+  replay and errors on top of ClickHouse and OpenTelemetry, giving engineers one place to search raw events,
+  correlate a log line to its trace and that span to a session replay, build dashboards and run threshold
+  alerts. It ships as an MIT-licensed self-hostable stack (the app, a Node.js API, an opinionated OpenTelemetry
+  collector distribution and ClickHouse), as HyperDX Cloud at hyperdx.io, and as the user interface of
+  ClickStack after ClickHouse acquired the company in March 2025. Its developer surface is a REST management
+  API for dashboards, alerts, sources, saved searches, connections and webhooks, plus a first-party MCP
+  server and an agent-friendly terminal CLI.
 url: https://raw.githubusercontent.com/api-evangelist/hyperdx/refs/heads/main/apis.yml
 deliveryModel:
   model: unknown
@@ -44,7 +42,7 @@ x-type: company
 x-source: harvest:self-hosted-agent-stack
 specificationVersion: '0.20'
 created: '2026-08-27'
-modified: '2026-08-27'
+modified: '2026-09-16'
 tags:
 - Company
 - Observability
@@ -83,10 +81,9 @@ maintainers:
 apis:
 - aid: hyperdx:hyperdx-cloud-api-v1
   name: HyperDX Cloud API (v1)
-  description: >-
-    The documented v1 API on HyperDX Cloud, covering alerts, dashboards and chart series queries at api.hyperdx.io
-    under /api/v1, authenticated with a Bearer personal API key. Documented as prose on hyperdx.io/docs/api;
-    no OpenAPI is published for this version.
+  description: The documented v1 API on HyperDX Cloud, covering alerts, dashboards and chart series queries
+    at api.hyperdx.io under /api/v1, authenticated with a Bearer personal API key. Documented as prose
+    on hyperdx.io/docs/api; no OpenAPI is published for this version.
   humanURL: https://www.hyperdx.io/docs/api/alerts
   baseURL: https://api.hyperdx.io
   tags:
@@ -102,10 +99,9 @@ apis:
     url: rate-limits/hyperdx-rate-limits.yml
 - aid: hyperdx:hyperdx-mcp-server
   name: HyperDX (ClickStack) MCP Server
-  description: >-
-    First-party Model Context Protocol server shipped inside the HyperDX API package, served at /api/mcp
-    on your instance over Streamable HTTP with Bearer authentication. Exposes 27 tools covering source
-    discovery, metric catalogs, time series, tables, raw ClickHouse SQL, log pattern mining, emerging-signal
+  description: First-party Model Context Protocol server shipped inside the HyperDX API package, served
+    at /api/mcp on your instance over Streamable HTTP with Bearer authentication. Exposes 27 tools covering
+    source discovery, metric catalogs, time series, tables, raw ClickHouse SQL, log pattern mining, emerging-signal
     detection, trace waterfalls, dashboards, saved searches, alerts and webhooks. Not available on HyperDX
     Cloud v1.
   humanURL: https://github.com/hyperdxio/hyperdx/blob/main/MCP.md
@@ -358,8 +354,7 @@ common:
 - type: Overlay
   url: overlays/hyperdx-external-api-overlay.yaml
 - type: OpenAPI
-  url: openapi/hyperdx-external-api-openapi.json
-
+  url: openapi/_original/hyperdx-external-api-openapi.json
 x-enrichment:
   date: '2026-08-27'
   status: enriched
