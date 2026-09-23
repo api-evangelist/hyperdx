@@ -1,7 +1,7 @@
 {
   "provider": "hyperdx",
   "sources": [
-    "hyperdx-external-api-openapi.json"
+    "_original/hyperdx-external-api-openapi.json"
   ],
   "outputs": [
     "hyperdx-alerts-api-openapi.yml",
@@ -14,16 +14,25 @@
     "hyperdx-team-api-openapi.yml",
     "hyperdx-webhooks-api-openapi.yml"
   ],
-  "archived": [
-    "archived openapi/hyperdx-external-api-openapi.json"
-  ],
+  "archived": [],
   "errors": [],
   "warnings": [],
   "notes": [
+    "sourced from openapi/_original/ (1 archived document(s)); previously refined output at the top level was skipped rather than re-split",
     "hyperdx-external-api-openapi.json: upgraded openapi 3.0.0 -> OpenAPI 3.2.0",
     "hyperdx-external-api-openapi.json: declared missing tag: Saved Searches",
     "hyperdx-external-api-openapi.json: declared missing tag: Team",
-    "apis.yml register: written (+9 apis, 11 total)"
+    "apis.yml register: already-registered"
   ],
-  "skipped": []
+  "skipped": [
+    "hyperdx-alerts-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "hyperdx-charts-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "hyperdx-connections-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "hyperdx-dashboards-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "hyperdx-saved-searches-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "hyperdx-search-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "hyperdx-sources-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "hyperdx-team-api-openapi.yml: previously refined output, superseded by openapi/_original/",
+    "hyperdx-webhooks-api-openapi.yml: previously refined output, superseded by openapi/_original/"
+  ]
 }

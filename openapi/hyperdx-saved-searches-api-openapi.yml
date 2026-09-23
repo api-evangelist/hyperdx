@@ -142,9 +142,7 @@ paths:
 
         default when omitted, so omitting a field resets it rather than
 
-        preserving the stored value.
-
-        '
+        preserving the stored value.'
       operationId: updateSavedSearch
       tags:
       - Saved Searches
@@ -235,57 +233,6 @@ paths:
                 $ref: '#/components/schemas/Error'
 components:
   schemas:
-    SavedSearchFilter:
-      type: object
-      required:
-      - condition
-      description: 'A single pinned filter applied to the search. New or changed filters must use the SQL predicate form the UI produces so they render as a sidebar facet: `<column> IN (''<value1>'', ...)` (or `NOT IN` / `BETWEEN`). Conditions not in this form are rejected on create, and on update unless they are echoed back unchanged from the stored saved search (so a read-modify-write of a legacy filter still succeeds). Note: existing saved searches created in the UI may also return a Lucene text filter (`type: lucene`) or a structured comparison (`type: sql_ast` with `operator`/`left`/`right`); reads return these stored shapes verbatim, and they are preserved on unchanged update.'
-      properties:
-        type:
-          type: string
-          enum:
-          - sql
-          default: sql
-          description: Always `sql`. Only SQL predicate filters render in the sidebar.
-          example: sql
-        condition:
-          type: string
-          maxLength: 8192
-          description: SQL predicate applied to the search, in `<column> IN (...)` form.
-          example: ServiceName IN ('checkout', 'payments')
-    PaginationMeta:
-      type: object
-      required:
-      - total
-      - limit
-      - offset
-      properties:
-        total:
-          type: integer
-          description: Total number of items matching the query, ignoring pagination.
-          example: 142
-        limit:
-          type: integer
-          description: Maximum number of items returned in this page.
-          example: 50
-        offset:
-          type: integer
-          description: Number of items skipped before this page.
-          example: 100
-    SavedSearchesListResponse:
-      type: object
-      required:
-      - data
-      - meta
-      properties:
-        data:
-          type: array
-          description: List of saved search objects.
-          items:
-            $ref: '#/components/schemas/SavedSearch'
-        meta:
-          $ref: '#/components/schemas/PaginationMeta'
-          description: Pagination metadata for this result page.
     SavedSearchInput:
       type: object
       required:
@@ -343,19 +290,27 @@ components:
           example:
           - type: sql
             condition: ServiceName IN ('checkout', 'payments')
-    Error:
+    EmptyResponse:
       type: object
+      properties: {}
+    SavedSearchFilter:
+      type: object
+      required:
+      - condition
+      description: 'A single pinned filter applied to the search. New or changed filters must use the SQL predicate form the UI produces so they render as a sidebar facet: `<column> IN (''<value1>'', ...)` (or `NOT IN` / `BETWEEN`). Conditions not in this form are rejected on create, and on update unless they are echoed back unchanged from the stored saved search (so a read-modify-write of a legacy filter still succeeds). Note: existing saved searches created in the UI may also return a Lucene text filter (`type: lucene`) or a structured comparison (`type: sql_ast` with `operator`/`left`/`right`); reads return these stored shapes verbatim, and they are preserved on unchanged update.'
       properties:
-        message:
+        type:
           type: string
-          description: Human-readable error message.
-          example: 'NOT_FOUND: Alert not found'
-    SavedSearchResponseEnvelope:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/SavedSearch'
-          description: The saved search object.
+          enum:
+          - sql
+          default: sql
+          description: Always `sql`. Only SQL predicate filters render in the sidebar.
+          example: sql
+        condition:
+          type: string
+          maxLength: 8192
+          description: SQL predicate applied to the search, in `<column> IN (...)` form.
+          example: ServiceName IN ('checkout', 'payments')
     SavedSearch:
       type: object
       required:
@@ -431,9 +386,52 @@ components:
           readOnly: true
           description: Last update timestamp.
           example: '2025-06-15T10:30:00.000Z'
-    EmptyResponse:
+    SavedSearchResponseEnvelope:
       type: object
-      properties: {}
+      properties:
+        data:
+          $ref: '#/components/schemas/SavedSearch'
+          description: The saved search object.
+    SavedSearchesListResponse:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          type: array
+          description: List of saved search objects.
+          items:
+            $ref: '#/components/schemas/SavedSearch'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+          description: Pagination metadata for this result page.
+    PaginationMeta:
+      type: object
+      required:
+      - total
+      - limit
+      - offset
+      properties:
+        total:
+          type: integer
+          description: Total number of items matching the query, ignoring pagination.
+          example: 142
+        limit:
+          type: integer
+          description: Maximum number of items returned in this page.
+          example: 50
+        offset:
+          type: integer
+          description: Number of items skipped before this page.
+          example: 100
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Human-readable error message.
+          example: 'NOT_FOUND: Alert not found'
   securitySchemes:
     BearerAuth:
       type: http

@@ -15,7 +15,25 @@ paths:
   /api/v2/search:
     post:
       summary: Search Raw Logs and Traces
-      description: "Fetch individual log or trace rows from a HyperDX source.\n\nThis endpoint mirrors the \"search\" panel mode in the HyperDX UI.\nHyperDX applies the same query optimizations used in the UI:\n  - Named attribute columns (e.g. \"pipedream.pipeline_name\") are\n    rewritten to their indexed materialized equivalents when the\n    source schema exposes them, avoiding slow Map lookups.\n  - Rows are ordered by timestamp descending (most recent first).\n  - The source's built-in PREWHERE / partition pruning is applied.\n\nAuthentication: Bearer token (personal API key from Team Settings).\n"
+      description: 'Fetch individual log or trace rows from a HyperDX source.
+
+
+        This endpoint mirrors the "search" panel mode in the HyperDX UI.
+
+        HyperDX applies the same query optimizations used in the UI:
+
+        - Named attribute columns (e.g. "pipedream.pipeline_name") are
+
+        rewritten to their indexed materialized equivalents when the
+
+        source schema exposes them, avoiding slow Map lookups.
+
+        - Rows are ordered by timestamp descending (most recent first).
+
+        - The source''s built-in PREWHERE / partition pruning is applied.
+
+
+        Authentication: Bearer token (personal API key from Team Settings).'
       operationId: searchEvents
       tags:
       - Search
@@ -117,12 +135,6 @@ components:
         rows:
           type: integer
           description: Number of rows in this response (not total matching rows).
-    SearchRow:
-      type: object
-      description: 'A single result row. Keys correspond to the requested columns (or the source default columns when columns was omitted). Values are strings or numbers as returned by ClickHouse.
-
-        '
-      additionalProperties: true
     SearchRequest:
       type: object
       required:
@@ -219,6 +231,12 @@ components:
             instead of using a large offset.
 
             '
+    SearchRow:
+      type: object
+      description: 'A single result row. Keys correspond to the requested columns (or the source default columns when columns was omitted). Values are strings or numbers as returned by ClickHouse.
+
+        '
+      additionalProperties: true
   securitySchemes:
     BearerAuth:
       type: http

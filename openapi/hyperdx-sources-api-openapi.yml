@@ -57,9 +57,7 @@ paths:
 
         `metadataMaterializedViews.granularity`) accept the same short format
 
-        the API returns (e.g. `5m`, `15s`, `1h`, `1d`).
-
-        '
+        the API returns (e.g. `5m`, `15s`, `1h`, `1d`).'
       operationId: createSource
       tags:
       - Sources
@@ -159,9 +157,7 @@ paths:
 
         `metadataMaterializedViews.granularity`) accept the same short format
 
-        the API returns (e.g. `5m`, `15s`, `1h`, `1d`).
-
-        '
+        the API returns (e.g. `5m`, `15s`, `1h`, `1d`).'
       operationId: updateSource
       tags:
       - Sources
@@ -262,88 +258,6 @@ paths:
                 message: Source not found
 components:
   schemas:
-    MaterializedView:
-      type: object
-      required:
-      - databaseName
-      - tableName
-      - dimensionColumns
-      - minGranularity
-      - timestampColumn
-      - aggregatedColumns
-      properties:
-        databaseName:
-          type: string
-          description: Database name for the materialized view
-          example: otel
-        tableName:
-          type: string
-          description: Table name for the materialized view
-          example: otel_logs_mv_5m
-        dimensionColumns:
-          type: string
-          description: Columns which are not pre-aggregated in the materialized view and can be used for filtering and grouping.
-          example: ServiceName, SeverityText
-        minGranularity:
-          type: string
-          description: 'The granularity of the timestamp column: a positive integer followed by a unit (s, m, h, d). Common values: 1s, 15s, 30s, 1m, 5m, 15m, 30m, 1h, 2h, 6h, 12h, 1d, 2d, 7d, 30d.'
-          pattern: ^\d+(s|m|h|d)$
-          example: 5m
-        minDate:
-          type:
-          - string
-          - 'null'
-          format: date-time
-          description: (Optional) The earliest date and time for which the materialized view contains data. If not provided, then HyperDX will assume that the materialized view contains data for all dates for which the source table contains data.
-          example: '2025-01-01T00:00:00Z'
-        timestampColumn:
-          type: string
-          description: Timestamp column name
-          example: Timestamp
-        aggregatedColumns:
-          type: array
-          description: Columns which are pre-aggregated by the materialized view
-          items:
-            $ref: '#/components/schemas/AggregatedColumn'
-    MetricTables:
-      type: object
-      description: Mapping of metric data types to table names. At least one must be specified.
-      properties:
-        gauge:
-          type: string
-          description: Table containing gauge metrics data
-          example: otel_metrics_gauge
-        histogram:
-          type: string
-          description: Table containing histogram metrics data
-          example: otel_metrics_histogram
-        sum:
-          type: string
-          description: Table containing sum metrics data
-          example: otel_metrics_sum
-        summary:
-          type: string
-          description: Table containing summary metrics data. Note - not yet fully supported by HyperDX
-          example: otel_metrics_summary
-        exponential histogram:
-          type: string
-          description: Table containing exponential histogram metrics data. Note - not yet fully supported by HyperDX
-          example: otel_metrics_exponential_histogram
-    MetricSourceFrom:
-      type: object
-      required:
-      - databaseName
-      properties:
-        databaseName:
-          type: string
-          description: ClickHouse database name
-          example: otel
-        tableName:
-          type:
-          - string
-          - 'null'
-          description: ClickHouse table name
-          example: otel_metrics_gauge
     Source:
       oneOf:
       - $ref: '#/components/schemas/LogSource'
@@ -359,79 +273,6 @@ components:
           metric: '#/components/schemas/MetricSource'
           session: '#/components/schemas/SessionSource'
           promql: '#/components/schemas/PromqlSource'
-    SessionSource:
-      type: object
-      required:
-      - name
-      - kind
-      - connection
-      - from
-      - traceSourceId
-      properties:
-        id:
-          type: string
-          readOnly: true
-          description: Unique source ID. Server-generated; ignored if sent in create/update requests.
-          example: 507f1f77bcf86cd799439031
-        name:
-          type: string
-          description: Display name for the source.
-          example: Sessions
-        section:
-          type: string
-          maxLength: 256
-          description: Optional grouping label used to organize sources in the source selector. Sources that share a section value are displayed together.
-          example: Billing
-        disabled:
-          type:
-          - boolean
-          - 'null'
-          description: When true, the source is hidden from source selectors in the UI. Defaults to false.
-          example: false
-        kind:
-          type: string
-          enum:
-          - session
-          description: Source kind discriminator. Must be "session" for session sources.
-          example: session
-        connection:
-          type: string
-          description: ID of the ClickHouse connection used by this source.
-          example: 507f1f77bcf86cd799439012
-        from:
-          $ref: '#/components/schemas/SourceFrom'
-          description: Database and table location of the source data.
-        querySettings:
-          type:
-          - array
-          - 'null'
-          description: Optional ClickHouse query settings applied when querying this source.
-          items:
-            $ref: '#/components/schemas/QuerySetting'
-        timestampValueExpression:
-          type:
-          - string
-          - 'null'
-          description: DateTime column or expression that is part of your table's primary key.
-          example: TimestampTime
-        traceSourceId:
-          type: string
-          description: HyperDX Source for traces associated with sessions.
-          example: 507f1f77bcf86cd799439021
-    SourceFrom:
-      type: object
-      required:
-      - databaseName
-      - tableName
-      properties:
-        databaseName:
-          type: string
-          description: ClickHouse database name
-          example: otel
-        tableName:
-          type: string
-          description: ClickHouse table name
-          example: otel_logs
     HighlightedAttributeExpression:
       type: object
       required:
@@ -453,74 +294,6 @@ components:
           - 'null'
           description: Optional alias for the attribute
           example: HTTP Status Code
-    MetricSource:
-      type: object
-      required:
-      - name
-      - kind
-      - connection
-      - from
-      - metricTables
-      - timestampValueExpression
-      - resourceAttributesExpression
-      properties:
-        id:
-          type: string
-          readOnly: true
-          description: Unique source ID. Server-generated; ignored if sent in create/update requests.
-          example: 507f1f77bcf86cd799439041
-        name:
-          type: string
-          description: Display name for the source.
-          example: Metrics
-        section:
-          type: string
-          maxLength: 256
-          description: Optional grouping label used to organize sources in the source selector. Sources that share a section value are displayed together.
-          example: Billing
-        disabled:
-          type:
-          - boolean
-          - 'null'
-          description: When true, the source is hidden from source selectors in the UI. Defaults to false.
-          example: false
-        kind:
-          type: string
-          enum:
-          - metric
-          description: Source kind discriminator. Must be "metric" for metric sources.
-          example: metric
-        connection:
-          type: string
-          description: ID of the ClickHouse connection used by this source.
-          example: 507f1f77bcf86cd799439012
-        from:
-          $ref: '#/components/schemas/MetricSourceFrom'
-          description: Database and optional table location of the metric source data.
-        querySettings:
-          type:
-          - array
-          - 'null'
-          description: Optional ClickHouse query settings applied when querying this source.
-          items:
-            $ref: '#/components/schemas/QuerySetting'
-        metricTables:
-          $ref: '#/components/schemas/MetricTables'
-          description: Mapping of metric data types to their respective table names.
-        timestampValueExpression:
-          type: string
-          description: DateTime column or expression that is part of your table's primary key.
-          example: TimeUnix
-        resourceAttributesExpression:
-          type: string
-          description: Column containing resource attributes for metrics
-          example: ResourceAttributes
-        logSourceId:
-          type:
-          - string
-          - 'null'
-          description: HyperDX Source for logs associated with metrics. Optional
-          example: 507f1f77bcf86cd799439011
     AggregatedColumn:
       type: object
       required:
@@ -541,12 +314,21 @@ components:
           type: string
           description: Materialized view column name
           example: sum__Duration
-    SourceResponseEnvelope:
+    MetricSourceFrom:
       type: object
+      required:
+      - databaseName
       properties:
-        data:
-          $ref: '#/components/schemas/Source'
-          description: The source object.
+        databaseName:
+          type: string
+          description: ClickHouse database name
+          example: otel
+        tableName:
+          type:
+          - string
+          - 'null'
+          description: ClickHouse table name
+          example: otel_metrics_gauge
     TraceSource:
       type: object
       required:
@@ -763,6 +545,299 @@ components:
               type: string
               description: The time granularity of the rollup tables.
               example: 15m
+    EmptyResponse:
+      type: object
+      properties: {}
+    MetricTables:
+      type: object
+      description: Mapping of metric data types to table names. At least one must be specified.
+      properties:
+        gauge:
+          type: string
+          description: Table containing gauge metrics data
+          example: otel_metrics_gauge
+        histogram:
+          type: string
+          description: Table containing histogram metrics data
+          example: otel_metrics_histogram
+        sum:
+          type: string
+          description: Table containing sum metrics data
+          example: otel_metrics_sum
+        summary:
+          type: string
+          description: Table containing summary metrics data. Note - not yet fully supported by HyperDX
+          example: otel_metrics_summary
+        exponential histogram:
+          type: string
+          description: Table containing exponential histogram metrics data. Note - not yet fully supported by HyperDX
+          example: otel_metrics_exponential_histogram
+    SessionSource:
+      type: object
+      required:
+      - name
+      - kind
+      - connection
+      - from
+      - traceSourceId
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: Unique source ID. Server-generated; ignored if sent in create/update requests.
+          example: 507f1f77bcf86cd799439031
+        name:
+          type: string
+          description: Display name for the source.
+          example: Sessions
+        section:
+          type: string
+          maxLength: 256
+          description: Optional grouping label used to organize sources in the source selector. Sources that share a section value are displayed together.
+          example: Billing
+        disabled:
+          type:
+          - boolean
+          - 'null'
+          description: When true, the source is hidden from source selectors in the UI. Defaults to false.
+          example: false
+        kind:
+          type: string
+          enum:
+          - session
+          description: Source kind discriminator. Must be "session" for session sources.
+          example: session
+        connection:
+          type: string
+          description: ID of the ClickHouse connection used by this source.
+          example: 507f1f77bcf86cd799439012
+        from:
+          $ref: '#/components/schemas/SourceFrom'
+          description: Database and table location of the source data.
+        querySettings:
+          type:
+          - array
+          - 'null'
+          description: Optional ClickHouse query settings applied when querying this source.
+          items:
+            $ref: '#/components/schemas/QuerySetting'
+        timestampValueExpression:
+          type:
+          - string
+          - 'null'
+          description: DateTime column or expression that is part of your table's primary key.
+          example: TimestampTime
+        traceSourceId:
+          type: string
+          description: HyperDX Source for traces associated with sessions.
+          example: 507f1f77bcf86cd799439021
+    SourcesListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          description: List of source objects.
+          items:
+            $ref: '#/components/schemas/Source'
+    MaterializedView:
+      type: object
+      required:
+      - databaseName
+      - tableName
+      - dimensionColumns
+      - minGranularity
+      - timestampColumn
+      - aggregatedColumns
+      properties:
+        databaseName:
+          type: string
+          description: Database name for the materialized view
+          example: otel
+        tableName:
+          type: string
+          description: Table name for the materialized view
+          example: otel_logs_mv_5m
+        dimensionColumns:
+          type: string
+          description: Columns which are not pre-aggregated in the materialized view and can be used for filtering and grouping.
+          example: ServiceName, SeverityText
+        minGranularity:
+          type: string
+          description: 'The granularity of the timestamp column: a positive integer followed by a unit (s, m, h, d). Common values: 1s, 15s, 30s, 1m, 5m, 15m, 30m, 1h, 2h, 6h, 12h, 1d, 2d, 7d, 30d.'
+          pattern: ^\d+(s|m|h|d)$
+          example: 5m
+        minDate:
+          type:
+          - string
+          - 'null'
+          format: date-time
+          description: (Optional) The earliest date and time for which the materialized view contains data. If not provided, then HyperDX will assume that the materialized view contains data for all dates for which the source table contains data.
+          example: '2025-01-01T00:00:00Z'
+        timestampColumn:
+          type: string
+          description: Timestamp column name
+          example: Timestamp
+        aggregatedColumns:
+          type: array
+          description: Columns which are pre-aggregated by the materialized view
+          items:
+            $ref: '#/components/schemas/AggregatedColumn'
+    SourceFrom:
+      type: object
+      required:
+      - databaseName
+      - tableName
+      properties:
+        databaseName:
+          type: string
+          description: ClickHouse database name
+          example: otel
+        tableName:
+          type: string
+          description: ClickHouse table name
+          example: otel_logs
+    SourceResponseEnvelope:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Source'
+          description: The source object.
+    QuerySetting:
+      type: object
+      required:
+      - setting
+      - value
+      properties:
+        setting:
+          type: string
+          description: ClickHouse setting name
+          example: max_threads
+        value:
+          type: string
+          description: Setting value
+          example: '4'
+    MetricSource:
+      type: object
+      required:
+      - name
+      - kind
+      - connection
+      - from
+      - metricTables
+      - timestampValueExpression
+      - resourceAttributesExpression
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: Unique source ID. Server-generated; ignored if sent in create/update requests.
+          example: 507f1f77bcf86cd799439041
+        name:
+          type: string
+          description: Display name for the source.
+          example: Metrics
+        section:
+          type: string
+          maxLength: 256
+          description: Optional grouping label used to organize sources in the source selector. Sources that share a section value are displayed together.
+          example: Billing
+        disabled:
+          type:
+          - boolean
+          - 'null'
+          description: When true, the source is hidden from source selectors in the UI. Defaults to false.
+          example: false
+        kind:
+          type: string
+          enum:
+          - metric
+          description: Source kind discriminator. Must be "metric" for metric sources.
+          example: metric
+        connection:
+          type: string
+          description: ID of the ClickHouse connection used by this source.
+          example: 507f1f77bcf86cd799439012
+        from:
+          $ref: '#/components/schemas/MetricSourceFrom'
+          description: Database and optional table location of the metric source data.
+        querySettings:
+          type:
+          - array
+          - 'null'
+          description: Optional ClickHouse query settings applied when querying this source.
+          items:
+            $ref: '#/components/schemas/QuerySetting'
+        metricTables:
+          $ref: '#/components/schemas/MetricTables'
+          description: Mapping of metric data types to their respective table names.
+        timestampValueExpression:
+          type: string
+          description: DateTime column or expression that is part of your table's primary key.
+          example: TimeUnix
+        resourceAttributesExpression:
+          type: string
+          description: Column containing resource attributes for metrics
+          example: ResourceAttributes
+        logSourceId:
+          type:
+          - string
+          - 'null'
+          description: HyperDX Source for logs associated with metrics. Optional
+          example: 507f1f77bcf86cd799439011
+    PromqlSource:
+      type: object
+      description: A source backed by a Prometheus-compatible endpoint, queried with PromQL. The referenced connection should be a Prometheus connection (isPrometheusEndpoint set to true).
+      required:
+      - name
+      - kind
+      - connection
+      - from
+      - timestampValueExpression
+      properties:
+        id:
+          type: string
+          readOnly: true
+          description: Unique source ID. Server-generated; ignored if sent in create/update requests.
+          example: 507f1f77bcf86cd799439051
+        name:
+          type: string
+          description: Display name for the source.
+          example: Prometheus Metrics
+        section:
+          type: string
+          maxLength: 256
+          description: Optional grouping label used to organize sources in the source selector. Sources that share a section value are displayed together.
+          example: Billing
+        disabled:
+          type:
+          - boolean
+          - 'null'
+          description: When true, the source is hidden from source selectors in the UI. Defaults to false.
+          example: false
+        kind:
+          type: string
+          enum:
+          - promql
+          description: Source kind discriminator. Must be "promql" for PromQL sources.
+          example: promql
+        connection:
+          type: string
+          description: ID of the connection used by this source. Should reference a Prometheus-compatible connection.
+          example: 507f1f77bcf86cd799439012
+        from:
+          $ref: '#/components/schemas/SourceFrom'
+          description: Required by the API for all source kinds; not used when querying a Prometheus endpoint (empty strings are not accepted — use placeholder values such as "default").
+        querySettings:
+          type:
+          - array
+          - 'null'
+          description: Optional ClickHouse query settings applied when querying this source.
+          items:
+            $ref: '#/components/schemas/QuerySetting'
+        timestampValueExpression:
+          type: string
+          description: Required by the API for all source kinds; not used when querying a Prometheus endpoint.
+          example: timestamp
     LogSource:
       type: object
       required:
@@ -955,85 +1030,6 @@ components:
           type: string
           description: Human-readable error message.
           example: 'NOT_FOUND: Alert not found'
-    EmptyResponse:
-      type: object
-      properties: {}
-    QuerySetting:
-      type: object
-      required:
-      - setting
-      - value
-      properties:
-        setting:
-          type: string
-          description: ClickHouse setting name
-          example: max_threads
-        value:
-          type: string
-          description: Setting value
-          example: '4'
-    SourcesListResponse:
-      type: object
-      properties:
-        data:
-          type: array
-          description: List of source objects.
-          items:
-            $ref: '#/components/schemas/Source'
-    PromqlSource:
-      type: object
-      description: A source backed by a Prometheus-compatible endpoint, queried with PromQL. The referenced connection should be a Prometheus connection (isPrometheusEndpoint set to true).
-      required:
-      - name
-      - kind
-      - connection
-      - from
-      - timestampValueExpression
-      properties:
-        id:
-          type: string
-          readOnly: true
-          description: Unique source ID. Server-generated; ignored if sent in create/update requests.
-          example: 507f1f77bcf86cd799439051
-        name:
-          type: string
-          description: Display name for the source.
-          example: Prometheus Metrics
-        section:
-          type: string
-          maxLength: 256
-          description: Optional grouping label used to organize sources in the source selector. Sources that share a section value are displayed together.
-          example: Billing
-        disabled:
-          type:
-          - boolean
-          - 'null'
-          description: When true, the source is hidden from source selectors in the UI. Defaults to false.
-          example: false
-        kind:
-          type: string
-          enum:
-          - promql
-          description: Source kind discriminator. Must be "promql" for PromQL sources.
-          example: promql
-        connection:
-          type: string
-          description: ID of the connection used by this source. Should reference a Prometheus-compatible connection.
-          example: 507f1f77bcf86cd799439012
-        from:
-          $ref: '#/components/schemas/SourceFrom'
-          description: Required by the API for all source kinds; not used when querying a Prometheus endpoint (empty strings are not accepted — use placeholder values such as "default").
-        querySettings:
-          type:
-          - array
-          - 'null'
-          description: Optional ClickHouse query settings applied when querying this source.
-          items:
-            $ref: '#/components/schemas/QuerySetting'
-        timestampValueExpression:
-          type: string
-          description: Required by the API for all source kinds; not used when querying a Prometheus endpoint.
-          example: timestamp
   securitySchemes:
     BearerAuth:
       type: http
