@@ -124,6 +124,12 @@ paths:
                     type: string
 components:
   schemas:
+    SearchRow:
+      type: object
+      description: 'A single result row. Keys correspond to the requested columns (or the source default columns when columns was omitted). Values are strings or numbers as returned by ClickHouse.
+
+        '
+      additionalProperties: true
     SearchResponse:
       type: object
       properties:
@@ -231,12 +237,6 @@ components:
             instead of using a large offset.
 
             '
-    SearchRow:
-      type: object
-      description: 'A single result row. Keys correspond to the requested columns (or the source default columns when columns was omitted). Values are strings or numbers as returned by ClickHouse.
-
-        '
-      additionalProperties: true
   securitySchemes:
     BearerAuth:
       type: http

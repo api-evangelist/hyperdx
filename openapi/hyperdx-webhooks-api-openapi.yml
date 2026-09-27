@@ -215,15 +215,6 @@ paths:
                 $ref: '#/components/schemas/Error'
 components:
   schemas:
-    WebhookResponseEnvelope:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/Webhook'
-          description: The webhook object.
-    EmptyResponse:
-      type: object
-      properties: {}
     IncidentIOWebhook:
       type: object
       required:
@@ -265,6 +256,74 @@ components:
           format: date-time
           description: Creation timestamp
           example: '2025-01-01T00:00:00.000Z'
+    WebhooksListResponse:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          type: array
+          description: List of webhook objects.
+          items:
+            $ref: '#/components/schemas/Webhook'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+          description: Pagination metadata for this result page.
+    WebhookResponseEnvelope:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Webhook'
+          description: The webhook object.
+    SlackWebhook:
+      type: object
+      required:
+      - id
+      - name
+      - service
+      - updatedAt
+      - createdAt
+      properties:
+        id:
+          type: string
+          description: Webhook ID
+          example: 507f1f77bcf86cd799439011
+        name:
+          type: string
+          description: Webhook name
+          example: Production Alerts
+        service:
+          type: string
+          enum:
+          - slack
+          description: Webhook service type
+          example: slack
+        url:
+          type: string
+          description: Slack incoming webhook URL
+          example: https://hooks.slack.com/services/REDACTED
+        description:
+          type: string
+          description: Webhook description, shown in the UI
+          example: 'Sends critical alerts to the #incidents channel'
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+          example: '2025-06-15T10:30:00.000Z'
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+          example: '2025-01-01T00:00:00.000Z'
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Human-readable error message.
+          example: 'NOT_FOUND: Alert not found'
     Webhook:
       oneOf:
       - $ref: '#/components/schemas/SlackWebhook'
@@ -276,6 +335,28 @@ components:
           slack: '#/components/schemas/SlackWebhook'
           incidentio: '#/components/schemas/IncidentIOWebhook'
           generic: '#/components/schemas/GenericWebhook'
+    PaginationMeta:
+      type: object
+      required:
+      - total
+      - limit
+      - offset
+      properties:
+        total:
+          type: integer
+          description: Total number of items matching the query, ignoring pagination.
+          example: 142
+        limit:
+          type: integer
+          description: Maximum number of items returned in this page.
+          example: 50
+        offset:
+          type: integer
+          description: Number of items skipped before this page.
+          example: 100
+    EmptyResponse:
+      type: object
+      properties: {}
     WebhookInput:
       type: object
       required:
@@ -357,20 +438,6 @@ components:
           additionalProperties:
             type: string
             maxLength: 4096
-    WebhooksListResponse:
-      type: object
-      required:
-      - data
-      - meta
-      properties:
-        data:
-          type: array
-          description: List of webhook objects.
-          items:
-            $ref: '#/components/schemas/Webhook'
-        meta:
-          $ref: '#/components/schemas/PaginationMeta'
-          description: Pagination metadata for this result page.
     GenericWebhook:
       type: object
       required:
@@ -416,73 +483,6 @@ components:
           format: date-time
           description: Creation timestamp
           example: '2025-01-01T00:00:00.000Z'
-    SlackWebhook:
-      type: object
-      required:
-      - id
-      - name
-      - service
-      - updatedAt
-      - createdAt
-      properties:
-        id:
-          type: string
-          description: Webhook ID
-          example: 507f1f77bcf86cd799439011
-        name:
-          type: string
-          description: Webhook name
-          example: Production Alerts
-        service:
-          type: string
-          enum:
-          - slack
-          description: Webhook service type
-          example: slack
-        url:
-          type: string
-          description: Slack incoming webhook URL
-          example: https://hooks.slack.com/services/REDACTED
-        description:
-          type: string
-          description: Webhook description, shown in the UI
-          example: 'Sends critical alerts to the #incidents channel'
-        updatedAt:
-          type: string
-          format: date-time
-          description: Last update timestamp
-          example: '2025-06-15T10:30:00.000Z'
-        createdAt:
-          type: string
-          format: date-time
-          description: Creation timestamp
-          example: '2025-01-01T00:00:00.000Z'
-    PaginationMeta:
-      type: object
-      required:
-      - total
-      - limit
-      - offset
-      properties:
-        total:
-          type: integer
-          description: Total number of items matching the query, ignoring pagination.
-          example: 142
-        limit:
-          type: integer
-          description: Maximum number of items returned in this page.
-          example: 50
-        offset:
-          type: integer
-          description: Number of items skipped before this page.
-          example: 100
-    Error:
-      type: object
-      properties:
-        message:
-          type: string
-          description: Human-readable error message.
-          example: 'NOT_FOUND: Alert not found'
   securitySchemes:
     BearerAuth:
       type: http

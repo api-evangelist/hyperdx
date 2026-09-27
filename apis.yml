@@ -52,7 +52,7 @@ tags:
 - Metrics
 - OpenTelemetry
 - ClickHouse
-- Open-Source
+- Open Source
 - Alerting
 - Dashboards
 - Session Replay
@@ -73,6 +73,7 @@ tags_raw:
 - Session Replay
 - Developer Tools
 - Agents
+- Open-Source
 maintainers:
 - FN: Kin Lane
   email: kin@apievangelist.com
