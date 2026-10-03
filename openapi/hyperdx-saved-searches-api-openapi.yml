@@ -233,20 +233,9 @@ paths:
                 $ref: '#/components/schemas/Error'
 components:
   schemas:
-    SavedSearchesListResponse:
+    EmptyResponse:
       type: object
-      required:
-      - data
-      - meta
-      properties:
-        data:
-          type: array
-          description: List of saved search objects.
-          items:
-            $ref: '#/components/schemas/SavedSearch'
-        meta:
-          $ref: '#/components/schemas/PaginationMeta'
-          description: Pagination metadata for this result page.
+      properties: {}
     SavedSearchInput:
       type: object
       required:
@@ -304,13 +293,6 @@ components:
           example:
           - type: sql
             condition: ServiceName IN ('checkout', 'payments')
-    Error:
-      type: object
-      properties:
-        message:
-          type: string
-          description: Human-readable error message.
-          example: 'NOT_FOUND: Alert not found'
     SavedSearchFilter:
       type: object
       required:
@@ -329,34 +311,6 @@ components:
           maxLength: 8192
           description: SQL predicate applied to the search, in `<column> IN (...)` form.
           example: ServiceName IN ('checkout', 'payments')
-    PaginationMeta:
-      type: object
-      required:
-      - total
-      - limit
-      - offset
-      properties:
-        total:
-          type: integer
-          description: Total number of items matching the query, ignoring pagination.
-          example: 142
-        limit:
-          type: integer
-          description: Maximum number of items returned in this page.
-          example: 50
-        offset:
-          type: integer
-          description: Number of items skipped before this page.
-          example: 100
-    SavedSearchResponseEnvelope:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/SavedSearch'
-          description: The saved search object.
-    EmptyResponse:
-      type: object
-      properties: {}
     SavedSearch:
       type: object
       required:
@@ -432,6 +386,52 @@ components:
           readOnly: true
           description: Last update timestamp.
           example: '2025-06-15T10:30:00.000Z'
+    SavedSearchesListResponse:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          type: array
+          description: List of saved search objects.
+          items:
+            $ref: '#/components/schemas/SavedSearch'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+          description: Pagination metadata for this result page.
+    SavedSearchResponseEnvelope:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/SavedSearch'
+          description: The saved search object.
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Human-readable error message.
+          example: 'NOT_FOUND: Alert not found'
+    PaginationMeta:
+      type: object
+      required:
+      - total
+      - limit
+      - offset
+      properties:
+        total:
+          type: integer
+          description: Total number of items matching the query, ignoring pagination.
+          example: 142
+        limit:
+          type: integer
+          description: Maximum number of items returned in this page.
+          example: 50
+        offset:
+          type: integer
+          description: Number of items skipped before this page.
+          example: 100
   securitySchemes:
     BearerAuth:
       type: http

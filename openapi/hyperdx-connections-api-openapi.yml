@@ -213,53 +213,9 @@ paths:
                 message: Connection not found
 components:
   schemas:
-    ConnectionResponseEnvelope:
+    EmptyResponse:
       type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/Connection'
-          description: The connection object.
-    UpdateConnectionRequest:
-      type: object
-      required:
-      - name
-      - host
-      - username
-      properties:
-        name:
-          type: string
-          description: Display name for the connection.
-          example: Production ClickHouse
-        host:
-          type: string
-          description: ClickHouse HTTP endpoint URL.
-          example: https://clickhouse.example.com:8443
-        username:
-          type: string
-          description: ClickHouse username.
-          example: default
-        password:
-          type: string
-          writeOnly: true
-          description: ClickHouse password. If omitted or empty, the existing password is kept.
-          example: my-new-secret-password
-        hyperdxSettingPrefix:
-          type:
-          - string
-          - 'null'
-          description: Optional prefix for HyperDX-specific ClickHouse settings. Set to null or an empty string to clear the existing value. If omitted, the existing value is kept.
-          example: hyperdx_
-        isPrometheusEndpoint:
-          type: boolean
-          description: Optional. When true, `host` is treated as a Prometheus-compatible API endpoint. When false or omitted, `host` is a ClickHouse HTTP endpoint. Omit to keep the existing value unchanged.
-          example: false
-    Error:
-      type: object
-      properties:
-        message:
-          type: string
-          description: Human-readable error message.
-          example: 'NOT_FOUND: Alert not found'
+      properties: {}
     CreateConnectionRequest:
       type: object
       required:
@@ -294,9 +250,12 @@ components:
           type: boolean
           description: Optional. When true, `host` is treated as a Prometheus-compatible API endpoint (e.g. Prometheus or Thanos) and PromQL queries are proxied to it. When false or omitted, `host` is a ClickHouse HTTP endpoint.
           example: false
-    EmptyResponse:
+    ConnectionResponseEnvelope:
       type: object
-      properties: {}
+      properties:
+        data:
+          $ref: '#/components/schemas/Connection'
+          description: The connection object.
     ConnectionsListResponse:
       type: object
       properties:
@@ -364,6 +323,47 @@ components:
           format: date-time
           description: Last update timestamp
           example: '2025-06-15T10:30:00.000Z'
+    Error:
+      type: object
+      properties:
+        message:
+          type: string
+          description: Human-readable error message.
+          example: 'NOT_FOUND: Alert not found'
+    UpdateConnectionRequest:
+      type: object
+      required:
+      - name
+      - host
+      - username
+      properties:
+        name:
+          type: string
+          description: Display name for the connection.
+          example: Production ClickHouse
+        host:
+          type: string
+          description: ClickHouse HTTP endpoint URL.
+          example: https://clickhouse.example.com:8443
+        username:
+          type: string
+          description: ClickHouse username.
+          example: default
+        password:
+          type: string
+          writeOnly: true
+          description: ClickHouse password. If omitted or empty, the existing password is kept.
+          example: my-new-secret-password
+        hyperdxSettingPrefix:
+          type:
+          - string
+          - 'null'
+          description: Optional prefix for HyperDX-specific ClickHouse settings. Set to null or an empty string to clear the existing value. If omitted, the existing value is kept.
+          example: hyperdx_
+        isPrometheusEndpoint:
+          type: boolean
+          description: Optional. When true, `host` is treated as a Prometheus-compatible API endpoint. When false or omitted, `host` is a ClickHouse HTTP endpoint. Omit to keep the existing value unchanged.
+          example: false
   securitySchemes:
     BearerAuth:
       type: http

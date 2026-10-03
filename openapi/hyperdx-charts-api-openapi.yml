@@ -170,14 +170,6 @@ paths:
                 error: Internal server error
 components:
   schemas:
-    SeriesResponse:
-      type: object
-      properties:
-        data:
-          type: array
-          description: Array of data points for the series
-          items:
-            $ref: '#/components/schemas/SeriesDataPoint'
     SeriesQueryRequest:
       type: object
       required:
@@ -250,6 +242,14 @@ components:
           example:
           - api
           - prod-host-1
+    SeriesResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          description: Array of data points for the series
+          items:
+            $ref: '#/components/schemas/SeriesDataPoint'
     ChartSeries:
       type: object
       required:

@@ -124,12 +124,6 @@ paths:
                     type: string
 components:
   schemas:
-    SearchRow:
-      type: object
-      description: 'A single result row. Keys correspond to the requested columns (or the source default columns when columns was omitted). Values are strings or numbers as returned by ClickHouse.
-
-        '
-      additionalProperties: true
     SearchResponse:
       type: object
       properties:
@@ -141,6 +135,12 @@ components:
         rows:
           type: integer
           description: Number of rows in this response (not total matching rows).
+    SearchRow:
+      type: object
+      description: 'A single result row. Keys correspond to the requested columns (or the source default columns when columns was omitted). Values are strings or numbers as returned by ClickHouse.
+
+        '
+      additionalProperties: true
     SearchRequest:
       type: object
       required:
