@@ -170,86 +170,6 @@ paths:
                 error: Internal server error
 components:
   schemas:
-    SeriesQueryRequest:
-      type: object
-      required:
-      - series
-      - startTime
-      - endTime
-      properties:
-        series:
-          type: array
-          description: Array of series configurations
-          items:
-            $ref: '#/components/schemas/ChartSeries'
-          minItems: 1
-          maxItems: 5
-        startTime:
-          type: number
-          description: Start timestamp in milliseconds
-          example: 1647014400000
-        endTime:
-          type: number
-          description: End timestamp in milliseconds
-          example: 1647100800000
-        granularity:
-          type: string
-          description: Time bucket size for aggregations
-          enum:
-          - 30s
-          - 1m
-          - 5m
-          - 10m
-          - 15m
-          - 30m
-          - 1h
-          - 2h
-          - 6h
-          - 12h
-          - 1d
-          - 2d
-          - 7d
-          - 30d
-          - auto
-          example: 1h
-        seriesReturnType:
-          type: string
-          description: Format of the returned data
-          enum:
-          - ratio
-          - column
-          example: column
-    SeriesDataPoint:
-      type: object
-      properties:
-        ts_bucket:
-          type: number
-          description: Timestamp of the data point (bucket start time)
-          example: 1647014400000
-        series_0.data:
-          type: number
-          description: Value for the first series
-          example: 42
-        series_1.data:
-          type: number
-          description: Value for the second series
-          example: 18
-        group:
-          type: array
-          description: Group by values if groupBy was specified
-          items:
-            type: string
-          example:
-          - api
-          - prod-host-1
-    SeriesResponse:
-      type: object
-      properties:
-        data:
-          type: array
-          description: Array of data points for the series
-          items:
-            $ref: '#/components/schemas/SeriesDataPoint'
     ChartSeries:
       type: object
       required:
@@ -310,6 +230,86 @@ components:
           - gauge
           - histogram
           example: gauge
+    SeriesDataPoint:
+      type: object
+      properties:
+        ts_bucket:
+          type: number
+          description: Timestamp of the data point (bucket start time)
+          example: 1647014400000
+        series_0.data:
+          type: number
+          description: Value for the first series
+          example: 42
+        series_1.data:
+          type: number
+          description: Value for the second series
+          example: 18
+        group:
+          type: array
+          description: Group by values if groupBy was specified
+          items:
+            type: string
+          example:
+          - api
+          - prod-host-1
+    SeriesResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          description: Array of data points for the series
+          items:
+            $ref: '#/components/schemas/SeriesDataPoint'
+    SeriesQueryRequest:
+      type: object
+      required:
+      - series
+      - startTime
+      - endTime
+      properties:
+        series:
+          type: array
+          description: Array of series configurations
+          items:
+            $ref: '#/components/schemas/ChartSeries'
+          minItems: 1
+          maxItems: 5
+        startTime:
+          type: number
+          description: Start timestamp in milliseconds
+          example: 1647014400000
+        endTime:
+          type: number
+          description: End timestamp in milliseconds
+          example: 1647100800000
+        granularity:
+          type: string
+          description: Time bucket size for aggregations
+          enum:
+          - 30s
+          - 1m
+          - 5m
+          - 10m
+          - 15m
+          - 30m
+          - 1h
+          - 2h
+          - 6h
+          - 12h
+          - 1d
+          - 2d
+          - 7d
+          - 30d
+          - auto
+          example: 1h
+        seriesReturnType:
+          type: string
+          description: Format of the returned data
+          enum:
+          - ratio
+          - column
+          example: column
   securitySchemes:
     BearerAuth:
       type: http

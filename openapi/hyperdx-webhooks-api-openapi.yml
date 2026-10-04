@@ -215,9 +215,6 @@ paths:
                 $ref: '#/components/schemas/Error'
 components:
   schemas:
-    EmptyResponse:
-      type: object
-      properties: {}
     Error:
       type: object
       properties:
@@ -225,31 +222,6 @@ components:
           type: string
           description: Human-readable error message.
           example: 'NOT_FOUND: Alert not found'
-    Webhook:
-      oneOf:
-      - $ref: '#/components/schemas/SlackWebhook'
-      - $ref: '#/components/schemas/IncidentIOWebhook'
-      - $ref: '#/components/schemas/GenericWebhook'
-      discriminator:
-        propertyName: service
-        mapping:
-          slack: '#/components/schemas/SlackWebhook'
-          incidentio: '#/components/schemas/IncidentIOWebhook'
-          generic: '#/components/schemas/GenericWebhook'
-    WebhooksListResponse:
-      type: object
-      required:
-      - data
-      - meta
-      properties:
-        data:
-          type: array
-          description: List of webhook objects.
-          items:
-            $ref: '#/components/schemas/Webhook'
-        meta:
-          $ref: '#/components/schemas/PaginationMeta'
-          description: Pagination metadata for this result page.
     SlackWebhook:
       type: object
       required:
@@ -281,98 +253,6 @@ components:
           type: string
           description: Webhook description, shown in the UI
           example: 'Sends critical alerts to the #incidents channel'
-        updatedAt:
-          type: string
-          format: date-time
-          description: Last update timestamp
-          example: '2025-06-15T10:30:00.000Z'
-        createdAt:
-          type: string
-          format: date-time
-          description: Creation timestamp
-          example: '2025-01-01T00:00:00.000Z'
-    IncidentIOWebhook:
-      type: object
-      required:
-      - id
-      - name
-      - service
-      - updatedAt
-      - createdAt
-      properties:
-        id:
-          type: string
-          description: Webhook ID
-          example: 507f1f77bcf86cd799439012
-        name:
-          type: string
-          description: Webhook name
-          example: Incident Response
-        service:
-          type: string
-          enum:
-          - incidentio
-          description: Webhook service type
-          example: incidentio
-        url:
-          type: string
-          description: incident.io alert event HTTP source URL
-          example: https://api.incident.io/v2/alert_events/http/abc123
-        description:
-          type: string
-          description: Webhook description, shown in the UI
-          example: Routes alerts to incident.io for on-call escalation
-        updatedAt:
-          type: string
-          format: date-time
-          description: Last update timestamp
-          example: '2025-06-15T10:30:00.000Z'
-        createdAt:
-          type: string
-          format: date-time
-          description: Creation timestamp
-          example: '2025-01-01T00:00:00.000Z'
-    WebhookResponseEnvelope:
-      type: object
-      properties:
-        data:
-          $ref: '#/components/schemas/Webhook'
-          description: The webhook object.
-    GenericWebhook:
-      type: object
-      required:
-      - id
-      - name
-      - service
-      - updatedAt
-      - createdAt
-      properties:
-        id:
-          type: string
-          description: Webhook ID
-          example: 507f1f77bcf86cd799439013
-        name:
-          type: string
-          description: Webhook name
-          example: PagerDuty Integration
-        service:
-          type: string
-          enum:
-          - generic
-          description: Webhook service type
-          example: generic
-        url:
-          type: string
-          description: Webhook destination URL
-          example: https://example.com/webhooks/alerts
-        description:
-          type: string
-          description: Webhook description, shown in the UI
-          example: Forwards alert payloads to an external monitoring service
-        body:
-          type: string
-          description: Optional request body template
-          example: '{"alert": "{{title}}", "severity": "{{level}}"}'
         updatedAt:
           type: string
           format: date-time
@@ -483,6 +363,126 @@ components:
           type: integer
           description: Number of items skipped before this page.
           example: 100
+    Webhook:
+      oneOf:
+      - $ref: '#/components/schemas/SlackWebhook'
+      - $ref: '#/components/schemas/IncidentIOWebhook'
+      - $ref: '#/components/schemas/GenericWebhook'
+      discriminator:
+        propertyName: service
+        mapping:
+          slack: '#/components/schemas/SlackWebhook'
+          incidentio: '#/components/schemas/IncidentIOWebhook'
+          generic: '#/components/schemas/GenericWebhook'
+    WebhookResponseEnvelope:
+      type: object
+      properties:
+        data:
+          $ref: '#/components/schemas/Webhook'
+          description: The webhook object.
+    IncidentIOWebhook:
+      type: object
+      required:
+      - id
+      - name
+      - service
+      - updatedAt
+      - createdAt
+      properties:
+        id:
+          type: string
+          description: Webhook ID
+          example: 507f1f77bcf86cd799439012
+        name:
+          type: string
+          description: Webhook name
+          example: Incident Response
+        service:
+          type: string
+          enum:
+          - incidentio
+          description: Webhook service type
+          example: incidentio
+        url:
+          type: string
+          description: incident.io alert event HTTP source URL
+          example: https://api.incident.io/v2/alert_events/http/abc123
+        description:
+          type: string
+          description: Webhook description, shown in the UI
+          example: Routes alerts to incident.io for on-call escalation
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+          example: '2025-06-15T10:30:00.000Z'
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+          example: '2025-01-01T00:00:00.000Z'
+    EmptyResponse:
+      type: object
+      properties: {}
+    WebhooksListResponse:
+      type: object
+      required:
+      - data
+      - meta
+      properties:
+        data:
+          type: array
+          description: List of webhook objects.
+          items:
+            $ref: '#/components/schemas/Webhook'
+        meta:
+          $ref: '#/components/schemas/PaginationMeta'
+          description: Pagination metadata for this result page.
+    GenericWebhook:
+      type: object
+      required:
+      - id
+      - name
+      - service
+      - updatedAt
+      - createdAt
+      properties:
+        id:
+          type: string
+          description: Webhook ID
+          example: 507f1f77bcf86cd799439013
+        name:
+          type: string
+          description: Webhook name
+          example: PagerDuty Integration
+        service:
+          type: string
+          enum:
+          - generic
+          description: Webhook service type
+          example: generic
+        url:
+          type: string
+          description: Webhook destination URL
+          example: https://example.com/webhooks/alerts
+        description:
+          type: string
+          description: Webhook description, shown in the UI
+          example: Forwards alert payloads to an external monitoring service
+        body:
+          type: string
+          description: Optional request body template
+          example: '{"alert": "{{title}}", "severity": "{{level}}"}'
+        updatedAt:
+          type: string
+          format: date-time
+          description: Last update timestamp
+          example: '2025-06-15T10:30:00.000Z'
+        createdAt:
+          type: string
+          format: date-time
+          description: Creation timestamp
+          example: '2025-01-01T00:00:00.000Z'
   securitySchemes:
     BearerAuth:
       type: http
