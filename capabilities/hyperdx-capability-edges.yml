@@ -1,0 +1,63 @@
+slug: hyperdx
+provider: HyperDX
+generated_by: planning/capability-mapping/scripts/classify_capabilities.py
+model: claude-opus-5
+frame:
+- Software & Technology
+min_confidence: 0.7
+capability_model:
+  source: https://github.com/vincentmakes/turbo-ea-capabilities
+  license: CC-BY-4.0
+  attribution: Turbo EA Capabilities by Vincent Verdet — Turbo EA, https://github.com/vincentmakes/turbo-ea-capabilities,
+    CC BY 4.0
+  notice: NOTICE
+edge_count: 5
+edges:
+- tag: Search
+  spec_file: hyperdx-search-api-openapi.yml
+  capability_id: BC-4220.20
+  capability_id_l1: BC-4220
+  capability_name: Observability Management
+  confidence: 0.85
+  evidence: POST /api/v2/search searchEvents 'Search Raw Logs and Traces'
+  reason: The single operation explicitly searches raw logs and traces — the core of logs/metrics/traces
+    observability, not generic enterprise search.
+- tag: Dashboards
+  spec_file: hyperdx-dashboards-api-openapi.yml
+  capability_id: BC-4220.20
+  capability_id_l1: BC-4220
+  capability_name: Observability Management
+  confidence: 0.75
+  evidence: POST /api/v2/dashboards createDashboard; schemas TimeSeriesDisplayType, TimeChartSeries, HeatmapChartConfig,
+    AggregationFunction
+  reason: Dashboards of charts built over the vendor's logs/metrics/traces store make the running service
+    understandable in production, i.e. Observability Management. Some ambiguity with generic Analytics
+    & BI, but the vendor is explicitly an observability platform.
+- tag: Alerts
+  spec_file: hyperdx-alerts-api-openapi.yml
+  capability_id: BC-4220.20
+  capability_id_l1: BC-4220
+  capability_name: Observability Management
+  confidence: 0.7
+  evidence: POST /api/v2/alerts  Create Alert; schemas AlertThresholdType, AlertChannelWebhook, AlertSource
+  reason: Threshold alerts over logs/metrics/traces on an observability platform — monitoring of the running
+    service, not financial-crime or business alerting; could alternatively sit under incident detection,
+    hence 0.7.
+- tag: Saved Searches
+  spec_file: hyperdx-saved-searches-api-openapi.yml
+  capability_id: BC-4220.20
+  capability_id_l1: BC-4220
+  capability_name: Observability Management
+  confidence: 0.7
+  evidence: POST /api/v2/saved-searches createSavedSearch; schemas SavedSearch, SavedSearchFilter
+  reason: Saved queries over the platform's log/trace event store support production observability workflows.
+    Thin on its own (it is query-management plumbing), hence moderate confidence.
+- tag: Sources
+  spec_file: hyperdx-sources-api-openapi.yml
+  capability_id: BC-4220.20
+  capability_id_l1: BC-4220
+  capability_name: Observability Management
+  confidence: 0.7
+  evidence: schemas TraceSource, LogSource, MetricSource, SessionSource, PromqlSource
+  reason: Defines and manages the log, trace, metric and session telemetry sources the platform queries
+    — telemetry source definition for observability. Partly configuration, so moderate confidence.

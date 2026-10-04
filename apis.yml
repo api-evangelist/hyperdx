@@ -283,6 +283,9 @@ apis:
   - type: DataModel
     url: data-model/hyperdx-data-model.yml
 common:
+- type: CapabilityMap
+  url: capabilities/hyperdx-capability-edges.yml
+  name: HyperDX Business Capability Map
 - type: License
   name: MIT
   url: https://github.com/hyperdxio/hyperdx/blob/main/LICENSE
