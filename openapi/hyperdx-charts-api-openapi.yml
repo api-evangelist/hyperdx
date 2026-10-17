@@ -230,29 +230,6 @@ components:
           - gauge
           - histogram
           example: gauge
-    SeriesDataPoint:
-      type: object
-      properties:
-        ts_bucket:
-          type: number
-          description: Timestamp of the data point (bucket start time)
-          example: 1647014400000
-        series_0.data:
-          type: number
-          description: Value for the first series
-          example: 42
-        series_1.data:
-          type: number
-          description: Value for the second series
-          example: 18
-        group:
-          type: array
-          description: Group by values if groupBy was specified
-          items:
-            type: string
-          example:
-          - api
-          - prod-host-1
     SeriesResponse:
       type: object
       properties:
@@ -310,6 +287,29 @@ components:
           - ratio
           - column
           example: column
+    SeriesDataPoint:
+      type: object
+      properties:
+        ts_bucket:
+          type: number
+          description: Timestamp of the data point (bucket start time)
+          example: 1647014400000
+        series_0.data:
+          type: number
+          description: Value for the first series
+          example: 42
+        series_1.data:
+          type: number
+          description: Value for the second series
+          example: 18
+        group:
+          type: array
+          description: Group by values if groupBy was specified
+          items:
+            type: string
+          example:
+          - api
+          - prod-host-1
   securitySchemes:
     BearerAuth:
       type: http
