@@ -1,8 +1,15 @@
 generated: '2026-10-13'
 method: searched
 checked:
+- https://api.nuget.org/v3
+- https://crates.io/api/v1
 - https://github.com/open-telemetry/opentelemetry.io/blob/main/data/ecosystem/vendors.yaml
 - https://github.com/open-telemetry/opentelemetry.io/blob/main/data/registry/
+- https://proxy.golang.org
+- https://pypi.org/pypi
+- https://registry.npmjs.org
+- https://repo1.maven.org/maven2
+- https://rubygems.org/api/v1
 marketplace_apps: []
 edges:
 - partner_name: OpenTelemetry
@@ -28,6 +35,90 @@ edges:
     detected: '2026-10-13'
   detected_by: sweep-observability.py
   detected: '2026-10-13'
+- partner_name: npm registry
+  partner: npm
+  partner_match: register
+  type: register
+  direction: provider-built
+  category: official SDK (JavaScript/TypeScript)
+  evidence: https://www.npmjs.com/package/@hyperdx/browser
+  channel: package-registry
+  relationship: distribution-channel
+  contract_reference:
+    register: npm registry (public registry JSON)
+    spec_file: null
+    language: JavaScript/TypeScript
+    packages:
+    - name: '@hyperdx/browser'
+      version: 0.26.0
+      released: '2026-09-03'
+      released_field: modified
+      lapsed: false
+      page: https://www.npmjs.com/package/@hyperdx/browser
+      repo_leg: github-org:hyperdxio
+      publisher_leg: email:hyperdx.io
+      matched_by: domain
+    - name: '@hyperdx/cli'
+      version: 0.7.0
+      released: '2026-10-13'
+      released_field: modified
+      lapsed: false
+      page: https://www.npmjs.com/package/@hyperdx/cli
+      repo_leg: github-org:hyperdxio
+      publisher_leg: email:hyperdx.io
+      matched_by: domain
+    - name: '@hyperdx/instrumentation-exception'
+      version: 0.3.0
+      released: '2026-05-26'
+      released_field: modified
+      lapsed: false
+      page: https://www.npmjs.com/package/@hyperdx/instrumentation-exception
+      repo_leg: domain:hyperdx.io
+      publisher_leg: email:hyperdx.io
+      matched_by: domain
+    - name: '@hyperdx/instrumentation-sentry-node'
+      version: 0.2.1
+      released: '2026-07-13'
+      released_field: modified
+      lapsed: false
+      page: https://www.npmjs.com/package/@hyperdx/instrumentation-sentry-node
+      repo_leg: domain:hyperdx.io
+      publisher_leg: email:hyperdx.io
+      matched_by: domain
+    - name: '@hyperdx/node-logger'
+      version: 0.5.0
+      released: '2026-05-26'
+      released_field: modified
+      lapsed: false
+      page: https://www.npmjs.com/package/@hyperdx/node-logger
+      repo_leg: domain:hyperdx.io
+      publisher_leg: email:hyperdx.io
+      matched_by: domain
+    - name: '@hyperdx/node-opentelemetry'
+      version: 0.11.0
+      released: '2026-05-26'
+      released_field: modified
+      lapsed: false
+      page: https://www.npmjs.com/package/@hyperdx/node-opentelemetry
+      repo_leg: domain:hyperdx.io
+      publisher_leg: email:hyperdx.io
+      matched_by: domain
+    - name: '@hyperdx/otel-react-native'
+      version: 0.3.0
+      released: '2026-03-10'
+      released_field: modified
+      lapsed: false
+      page: https://www.npmjs.com/package/@hyperdx/otel-react-native
+      repo_leg: github-org:hyperdxio
+      publisher_leg: email:hyperdx.io
+      matched_by: domain
+    current: true
+    signal_note: 'an official package on the registry: distribution, not an integration; lapsed = no release in
+      24 months'
+    detected_by: sweep-official-sdks.py
+    detected: '2026-10-18'
+  detected_by: sweep-official-sdks.py
+  first_seen: '2026-10-18'
 source:
 - https://github.com/open-telemetry/opentelemetry.io/blob/main/data/ecosystem/vendors.yaml
 - https://github.com/open-telemetry/opentelemetry.io/blob/main/data/registry/

@@ -27,3 +27,88 @@
     detected: '2026-10-13'
   status: not-a-workflow
   arazzo: null
+- slug: hyperdx-npm-registry
+  label: npm registry
+  partner: npm
+  partner_name: npm registry
+  category: official SDK (JavaScript/TypeScript)
+  type: register
+  channel: package-registry
+  evidence: https://www.npmjs.com/package/@hyperdx/browser
+  source: edge
+  relationship: distribution-channel
+  contract_reference:
+    register: npm registry (public registry JSON)
+    spec_file: null
+    language: JavaScript/TypeScript
+    packages:
+    - name: '@hyperdx/browser'
+      version: 0.26.0
+      released: '2026-09-03'
+      released_field: modified
+      lapsed: false
+      page: https://www.npmjs.com/package/@hyperdx/browser
+      repo_leg: github-org:hyperdxio
+      publisher_leg: email:hyperdx.io
+      matched_by: domain
+    - name: '@hyperdx/cli'
+      version: 0.7.0
+      released: '2026-10-13'
+      released_field: modified
+      lapsed: false
+      page: https://www.npmjs.com/package/@hyperdx/cli
+      repo_leg: github-org:hyperdxio
+      publisher_leg: email:hyperdx.io
+      matched_by: domain
+    - name: '@hyperdx/instrumentation-exception'
+      version: 0.3.0
+      released: '2026-05-26'
+      released_field: modified
+      lapsed: false
+      page: https://www.npmjs.com/package/@hyperdx/instrumentation-exception
+      repo_leg: domain:hyperdx.io
+      publisher_leg: email:hyperdx.io
+      matched_by: domain
+    - name: '@hyperdx/instrumentation-sentry-node'
+      version: 0.2.1
+      released: '2026-07-13'
+      released_field: modified
+      lapsed: false
+      page: https://www.npmjs.com/package/@hyperdx/instrumentation-sentry-node
+      repo_leg: domain:hyperdx.io
+      publisher_leg: email:hyperdx.io
+      matched_by: domain
+    - name: '@hyperdx/node-logger'
+      version: 0.5.0
+      released: '2026-05-26'
+      released_field: modified
+      lapsed: false
+      page: https://www.npmjs.com/package/@hyperdx/node-logger
+      repo_leg: domain:hyperdx.io
+      publisher_leg: email:hyperdx.io
+      matched_by: domain
+    - name: '@hyperdx/node-opentelemetry'
+      version: 0.11.0
+      released: '2026-05-26'
+      released_field: modified
+      lapsed: false
+      page: https://www.npmjs.com/package/@hyperdx/node-opentelemetry
+      repo_leg: domain:hyperdx.io
+      publisher_leg: email:hyperdx.io
+      matched_by: domain
+    - name: '@hyperdx/otel-react-native'
+      version: 0.3.0
+      released: '2026-03-10'
+      released_field: modified
+      lapsed: false
+      page: https://www.npmjs.com/package/@hyperdx/otel-react-native
+      repo_leg: github-org:hyperdxio
+      publisher_leg: email:hyperdx.io
+      matched_by: domain
+    current: true
+    signal_note: 'an official package on the registry: distribution, not an integration; lapsed = no release in
+      24 months'
+    detected_by: sweep-official-sdks.py
+    detected: '2026-10-18'
+  status: not-a-workflow
+  arazzo: null
