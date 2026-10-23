@@ -242,3 +242,9 @@ components:
       type: http
       scheme: bearer
       bearerFormat: API Key
+x-provenance:
+  method: harvested
+  publisher: HyperDX
+  source: https://raw.githubusercontent.com/hyperdxio/hyperdx/refs/heads/main/packages/api/openapi.json
+  note: split by refine-openapis from the provider's own published document, verified by fetch (openapi/_original/*.fetch.json);
+    stamped by stamp-openapi-provenance.py (roadmap#793)
