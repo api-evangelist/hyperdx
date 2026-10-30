@@ -64,5 +64,143 @@
 > Full detail: **[Where this data comes from](https://apievangelist.com/about/where-our-data-comes-from)**
 <!-- API-EVANGELIST-PROVENANCE:END -->
 
-HyperDX is a company surfaced via the API Evangelist harvest backlog (source: self-hosted-agent-stack) and added to the network as a stub for full-pipeline profiling.
-- https://www.hyperdx.io/
+HyperDX is an open-source observability platform that unifies logs, metrics, traces, session replay and errors on top of ClickHouse and OpenTelemetry, giving engineers one place to search raw events, correlate a log line to its trace and that span to a session replay, build dashboards and run threshold alerts. It ships as an MIT-licensed self-hostable stack (the app, a Node.js API, an opinionated OpenTelemetry collector distribution and ClickHouse), as HyperDX Cloud at hyperdx.io, and as the user interface of ClickStack after ClickHouse acquired the company in March 2025. Its developer surface is a REST management API for dashboards, alerts, sources, saved searches, connections and webhooks, plus a first-party MCP server and an agent-friendly terminal CLI.
+
+**Areas:** Company · Observability · Monitoring · Logging · Tracing · Metrics · OpenTelemetry · ClickHouse · Open Source · Alerting · Dashboards · Session Replay
+
+## HyperDX on APIs.io
+
+Everything profiled for HyperDX is published on APIs.io rather than in this repository. Start at the provider page — **[apis.io/providers/hyperdx/](https://apis.io/providers/hyperdx/)** — or go straight to one of the APIs or properties below.
+
+### APIs (11)
+
+- [HyperDX Cloud API (v1)](https://apis.io/apis/hyperdx/hyperdx-cloud-api-v1/) — The documented v1 API on HyperDX Cloud, covering alerts, dashboards and chart series queries at api.hyperdx.io under /api/v1, authenticated with a Bearer…
+- [HyperDX (ClickStack) MCP Server](https://apis.io/apis/hyperdx/hyperdx-mcp-server/) — First-party Model Context Protocol server shipped inside the HyperDX API package, served at /api/mcp on your instance over Streamable HTTP with Bearer…
+- [HyperDX Alerts API](https://apis.io/apis/hyperdx/hyperdx-alerts-api/) — Endpoints for managing monitoring alerts
+- [HyperDX Charts API](https://apis.io/apis/hyperdx/hyperdx-charts-api/) — Endpoints for querying chart data
+- [HyperDX Connections API](https://apis.io/apis/hyperdx/hyperdx-connections-api/) — Endpoints for managing ClickHouse connections
+- [HyperDX Dashboards API](https://apis.io/apis/hyperdx/hyperdx-dashboards-api/) — Endpoints for managing dashboards and their visualizations
+- [HyperDX Saved Searches API](https://apis.io/apis/hyperdx/hyperdx-saved-searches-api/) — The Saved Searches API from HyperDX — 2 operation(s) for saved searches.
+- [HyperDX Search API](https://apis.io/apis/hyperdx/hyperdx-search-api/) — Endpoints for querying raw data from log and trace sources
+- [HyperDX Sources API](https://apis.io/apis/hyperdx/hyperdx-sources-api/) — Endpoints for managing data sources
+- [HyperDX Team API](https://apis.io/apis/hyperdx/hyperdx-team-api/) — The Team API from HyperDX — 6 operation(s) for team.
+- [HyperDX Webhooks API](https://apis.io/apis/hyperdx/hyperdx-webhooks-api/) — Endpoints for managing webhooks
+
+### Published properties
+
+Each property below is a page on APIs.io carrying the machine-readable artifact and what it says.
+
+#### AsyncAPI (1)
+
+Event-driven and webhook contracts.
+
+- [Hyperdx Webhooks](https://apis.io/asyncapis/hyperdx/hyperdx-webhooks/)
+
+#### MCP servers (1)
+
+Model Context Protocol servers that expose the API to agents.
+
+- [HyperDX (ClickStack) MCP Server](https://apis.io/servers/hyperdx/hyperdx-clickstack-mcp-server/)
+
+#### Overlays (1)
+
+OpenAPI overlays, including conversational phrasing for each operation.
+
+- [Hyperdx External Api Overlay](https://apis.io/overlays/hyperdx/hyperdx-external-api-overlay/)
+
+#### Governance rules (1)
+
+Spectral rulesets for the provider's contracts.
+
+- [HyperDX — hyperdx rules](https://apis.io/rules/hyperdx/hyperdx-hyperdx-spectral-rules/)
+
+#### Security (2)
+
+Authentication, trust centre, and vulnerability disclosure.
+
+- [Hyperdx Authentication](https://apis.io/security/hyperdx/hyperdx-authentication/)
+- [Hyperdx Domain Security](https://apis.io/security/hyperdx/hyperdx-domain-security/)
+
+#### Plans and pricing (1)
+
+Published plans, tiers and prices.
+
+- [Hyperdx Plans Pricing](https://apis.io/plans/hyperdx/hyperdx-plans-pricing/)
+
+#### Rate limits (1)
+
+Published request limits.
+
+- [Hyperdx Rate Limits](https://apis.io/rate-limits/hyperdx/hyperdx-rate-limits/)
+
+## Where to find this API
+
+Links to the company's own pages. This repository publishes no copy of their specifications — the canonical document is theirs and lives at the URLs below.
+
+- [Website](https://www.hyperdx.io/)
+- [Documentation](https://www.hyperdx.io/docs)
+- [Getting started](https://www.hyperdx.io/docs/install)
+- [API reference](https://www.hyperdx.io/docs/api/alerts)
+- [Pricing](https://www.hyperdx.io/pricing)
+- [Sign up](https://www.hyperdx.io/register)
+- [Support](https://www.hyperdx.io/discord)
+- [Blog](https://www.hyperdx.io/blog)
+- [Terms of service](https://www.hyperdx.io/terms/service)
+- [Privacy policy](https://www.hyperdx.io/terms/privacy)
+- [GitHub](https://github.com/hyperdxio)
+- [Status](https://hyperdx.statuspage.io/)
+
+## API Evangelist rating
+
+**Kin Score 68.1** — exemplar · rubric 0.25.0 · scored 2026-10-23
+
+| Facet | Score |
+|---|---|
+| Discoverability | 68.3 |
+| Contract quality | 59.9 |
+| Contract governance | 50.0 |
+| Operational transparency | 63.2 |
+| Developer ergonomics | 80.4 |
+| Access clarity | 76.3 |
+
+**Agent readiness 37.7** — agent-ready
+
+| Agent-readiness dimension | Result |
+|---|---|
+| Spec Presence | yes |
+| Agentic Access | — |
+| Reversibility Documented | — |
+| MCP Server | templated |
+| Auth Clarity | bearer (partial credit) |
+| Idempotency | — |
+| Error Semantics | verified |
+| OpenAPI Examples | verified |
+| Rate Limit Signal | documented (partial credit) |
+| Event Surface Described | derived (partial credit) |
+| Agent Skills | derived (partial credit) |
+| Well Known Catalog | — |
+| Consent Identity | — |
+| Agent Card | — |
+| Dry Run Mode | — |
+| Delegated Identity | — |
+| Protected Resource Metadata | — |
+| Dynamic Client Registration | — |
+| Agentic Commerce | — |
+| Pagination Ratio | partial |
+| Operation Distinctiveness | distinct |
+
+**Regulatory alignment 24.5** — Horizontal (data, software, accessibility, platform)
+
+The rubric is published at [github.com/api-evangelist/kin-score](https://github.com/api-evangelist/kin-score). The per-check breakdown behind these numbers — which checks were earned, partial or missed — along with score history and how this provider compares to its peers, is available at [apis.io/providers/hyperdx/](https://apis.io/providers/hyperdx/).
+
+## How this profile is made
+
+API Evangelist profiles a company's public API surface the way a developer would find it: the website, developer portal and documentation, the specifications it publishes, its public repositories, and its pricing, status and changelog pages. From that it derives the properties above — contracts split per API, workflows, schemas, collections, governance rules, plans and rate limits — and scores them against the published [Kin Score rubric](https://github.com/api-evangelist/kin-score).
+
+The artifacts are published on [APIs.io](https://apis.io), not in this repository. This repository is the public record for HyperDX: the place to say something is wrong, missing or out of date, and to ask for a re-score or a removal.
+
+## Open an issue
+
+- **Something about this listing** — a wrong description, a missing API, a stale artifact or a question about the rating: [open an issue on this repository](https://github.com/api-evangelist/hyperdx/issues/new).
+- **A new API, or one that is not in the catalog yet** — [submit it on APIs.io](https://apis.io/add/).
+- **Anything else** — [the APIs.io inbox](https://github.com/api-search/inbox/issues/new) or [info@apievangelist.com](mailto:info@apievangelist.com).
